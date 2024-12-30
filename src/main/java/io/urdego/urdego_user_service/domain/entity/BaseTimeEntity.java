@@ -20,7 +20,7 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-public class BaseTimeEntity {
+public abstract class BaseTimeEntity {
 
 	@CreatedDate
 	@DateTimeFormat(iso = ISO.DATE_TIME)

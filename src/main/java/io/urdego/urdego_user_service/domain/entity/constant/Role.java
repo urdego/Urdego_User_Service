@@ -1,4 +1,4 @@
-package io.urdego.urdego_user_service.domain.entity;
+package io.urdego.urdego_user_service.domain.entity.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
