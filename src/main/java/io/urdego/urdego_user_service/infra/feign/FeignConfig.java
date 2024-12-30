@@ -1,4 +1,4 @@
-package io.urdego.urdego_user_service.infra.feign.config;
+package io.urdego.urdego_user_service.infra.feign;
 
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;

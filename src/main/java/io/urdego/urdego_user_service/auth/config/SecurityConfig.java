@@ -1,3 +1,4 @@
+/*
 package io.urdego.urdego_user_service.auth.config;
 
 import lombok.RequiredArgsConstructor;
@@ -29,3 +30,4 @@ public class SecurityConfig {
 				.addFilterBefore();
 	}
 }
+*/
