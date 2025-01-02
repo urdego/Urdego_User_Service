@@ -1,6 +1,7 @@
 package io.urdego.urdego_user_service.api.kakao;
 
 import io.urdego.urdego_user_service.api.kakao.dto.KakaoConnectionResponse;
+import io.urdego.urdego_user_service.api.kakao.dto.KakaoLoginRequest;
 import io.urdego.urdego_user_service.auth.Tokens;
 import io.urdego.urdego_user_service.common.TokenUtils;
 import io.urdego.urdego_user_service.domain.service.OAuthService;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,8 +29,8 @@ public class KakaoController {
 	}
 
 	@GetMapping("/login")
-	public ResponseEntity<Void> login(@RequestParam String code){
-		Tokens tokens = oAuthService.login(code);
+	public ResponseEntity<Void> login(@RequestBody KakaoLoginRequest request){
+		Tokens tokens = oAuthService.login(request);
 		HttpHeaders headers = TokenUtils.createTokenHeaders(tokens);
 		return ResponseEntity.ok().headers(headers).body(null);
 	}

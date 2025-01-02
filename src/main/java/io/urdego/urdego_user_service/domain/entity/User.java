@@ -25,11 +25,11 @@ public class User extends BaseTimeEntity{
 	@Column(name = "user_Id")
 	private Long id;
 
-	@Column(unique = true, name = "platform_id")
+	@Column(unique = true, name = "platform_id", nullable = false)
 	private String platformId;
 
 	//APPLE, KAKAO
-	@Column(name = "platform_type")
+	@Column(name = "platform_type", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private PlatfromType platformType;
 
@@ -39,7 +39,7 @@ public class User extends BaseTimeEntity{
 	@Enumerated(value = EnumType.STRING)
 	private Role role;
 
-	@Column(name = "profile_image_uri")
+	@Column(name = "profile_image")
 	private String profileImageUrl;
 
 	//푸시알림 수신 여부
@@ -49,15 +49,9 @@ public class User extends BaseTimeEntity{
 	//탈퇴 이유
 	private String withDrawalReason;
 
-//	private String refreshToken;
-//	private String accessToken;
-
 	@Builder
-	public User(String nickname, String platformId, String profileImageUrl, Boolean pushAlarm){
+	public User(String nickname){
 		this.nickname = nickname;
-		this.platformId = platformId;
-		this.profileImageUrl = profileImageUrl;
-		this.pushAlarm = pushAlarm;
 		this.role = Role.USER;
 		this.platformType = PlatfromType.KAKAO;
 	}

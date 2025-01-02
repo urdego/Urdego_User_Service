@@ -1,5 +1,6 @@
 package io.urdego.urdego_user_service.domain.entity.constant;
 
+import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -15,5 +16,12 @@ public enum Role {
 
 	DELETED("삭제된 회원");
 
-	private final String text;
+	private final String role;
+
+	public static Role findByRole(final String role) {
+		return Arrays.stream(Role.values())
+				.filter(userRole -> userRole.role.equals(role))
+				.findFirst()
+				.orElse(null);
+	}
 }

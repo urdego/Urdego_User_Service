@@ -36,11 +36,15 @@ dependencies {
 
 	//Security
 	//implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
 	//DB
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	//redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 	//Lombok
 	compileOnly 'org.projectlombok:lombok'
