@@ -53,7 +53,6 @@ public class User extends BaseTimeEntity{
 
 	@Builder
 	public User(String nickname, String email, String profileImageUrl, Long platformId){
-
 		this.nickname = nickname;
 		this.email = email;
 		this.profileImageUrl = profileImageUrl;
