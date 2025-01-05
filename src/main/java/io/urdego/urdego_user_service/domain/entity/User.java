@@ -25,13 +25,15 @@ public class User extends BaseTimeEntity{
 	@Column(name = "user_Id")
 	private Long id;
 
-	@Column(unique = true, name = "platform_id", nullable = false)
+	@Column(unique = true, name = "platform_id")
 	private String platformId;
 
 	//APPLE, KAKAO
 	@Column(name = "platform_type", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private PlatfromType platformType;
+
+	private String email;
 
 	private String nickname;
 
@@ -50,15 +52,12 @@ public class User extends BaseTimeEntity{
 	private String withDrawalReason;
 
 	@Builder
-	public User(String nickname){
+	public User(String nickname, String email, String profileImageUrl){
 		this.nickname = nickname;
+		this.email = email;
+		this.profileImageUrl = profileImageUrl;
 		this.role = Role.USER;
 		this.platformType = PlatfromType.KAKAO;
 	}
 
-/*	public static User of(String nickname){
-		return User.builder()
-				.nickname(nickname)
-				.build();
-	}*/
 }

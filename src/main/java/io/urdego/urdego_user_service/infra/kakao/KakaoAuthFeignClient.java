@@ -1,24 +1,22 @@
 package io.urdego.urdego_user_service.infra.kakao;
 
-import io.urdego.urdego_user_service.infra.feign.FeignConfig;
-import io.urdego.urdego_user_service.infra.kakao.dto.KakaoTokenResponse;
+import io.urdego.urdego_user_service.infra.kakao.dto.KakaoTokenDto;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(
 		name = "kakao-auth-client",
-		url = "https://kauth.kakao.com",
-		configuration = FeignConfig.class
+		url = "https://kauth.kakao.com"
 )
 public interface KakaoAuthFeignClient {
-	@PostMapping(
-			"/oauth/token?client_id={CLIENT_ID}"
-					+ "&redirect_uri={REDIRECT_URI}"
-					+ "&code={CODE}"
-					+ "&grant_type=authorization_code")
-	KakaoTokenResponse auth(
-			@PathVariable("CLIENT_ID") String clientId,
-			@PathVariable("REDIRECT_URI") String redirectUri,
-			@PathVariable("CODE") String code);
+
+	@PostMapping(value = "/oauth/token", consumes = "application/x-www-form-urlencoded")
+	KakaoTokenDto getAccessToken(
+			@RequestParam("grant_type") String grantType,
+			@RequestParam("client_id") String clientId,
+			@RequestParam("redirect_uri") String redirectUri,
+			@RequestParam("code") String code
+			//@RequestParam("client_secret") String clientSecret,
+	);
 }

@@ -1,25 +1,21 @@
 package io.urdego.urdego_user_service.domain.service;
 
-import io.urdego.urdego_user_service.api.kakao.dto.KakaoLoginRequest;
-import io.urdego.urdego_user_service.auth.OAuthProfile;
-import io.urdego.urdego_user_service.auth.RefreshToken;
-import io.urdego.urdego_user_service.auth.TokenManager;
-import io.urdego.urdego_user_service.auth.Tokens;
-import io.urdego.urdego_user_service.auth.UserPrincipal;
-import io.urdego.urdego_user_service.auth.jwt.JwrTokenProvider;
+import io.urdego.urdego_user_service.auth.OAuthService;
+import io.urdego.urdego_user_service.auth.jwt.JwtTokenProvider;
+import io.urdego.urdego_user_service.auth.jwt.TokenManager;
+import io.urdego.urdego_user_service.auth.jwt.Tokens;
 import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.domain.entity.repository.UserRepository;
-import io.urdego.urdego_user_service.auth.OAuthClient;
+import io.urdego.urdego_user_service.infra.kakao.dto.KakaoUserInfoDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class OAuthServiceImpl implements OAuthService {
-	private final OAuthClient oAuthClient;
+public class OAuthServiceImpl implements io.urdego.urdego_user_service.domain.service.OAuthService {
+	private final OAuthService oAuthClient;
 	private final UserRepository userRepository;
-	private final JwrTokenProvider jwrTokenProvider;
-	private final TokenManager tokenManager;
+	private final JwtTokenProvider jwrTokenProvider;
 
 	@Override
 	public String getConnectionUrl() {
@@ -27,18 +23,23 @@ public class OAuthServiceImpl implements OAuthService {
 	}
 
 	@Override
-	public Tokens login(KakaoLoginRequest request) {
-		OAuthProfile oAuthProfile = oAuthClient.getOAuthProfile(request);
+	public String login(String code) {
+		//사용자 정보 가져오기
+		KakaoUserInfoDto userInfo = oAuthClient.getOAuthProfile(code);
+
+		System.out.println("OAuthProfile: " + userInfo);
+
 		//닉네임 중복검사 false 시 User 저장
-		if(!userRepository.existsByNickname(oAuthProfile.getNickname())) {
-			userRepository.save(User.builder()
-							.nickname(oAuthProfile.getNickname())
+		if(!userRepository.existsByEmail(userInfo.getKakaoAccount().getEmail())) {
+			User user = userRepository.save(User.builder()
+					.email(userInfo.getKakaoAccount().getEmail())
+					.nickname(userInfo.getKakaoAccount().getProfile().getNickname())
+					.profileImageUrl(userInfo.getKakaoAccount().getProfile().getProfileImage())
 					.build());
+
+			//JWT 생성
+			return jwrTokenProvider.generateToken(user.getEmail());
 		}
-		//TODO 예외처리 해야 됨
-		User user = userRepository.findByNickname(oAuthProfile.getNickname()).orElseThrow();
-		Tokens tokens = jwrTokenProvider.generate(UserPrincipal.of(user.getId(),user.getRole()));
-		tokenManager.save(RefreshToken.of(user.getId(), tokens.refreshToken()));
-		return tokens;
+		return null;
 	}
 }

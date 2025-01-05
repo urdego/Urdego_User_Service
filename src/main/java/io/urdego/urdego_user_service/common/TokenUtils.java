@@ -1,6 +1,6 @@
 package io.urdego.urdego_user_service.common;
 
-import io.urdego.urdego_user_service.auth.Tokens;
+import io.urdego.urdego_user_service.auth.jwt.Tokens;
 import java.time.Duration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;

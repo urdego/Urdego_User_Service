@@ -8,6 +8,7 @@ public class OAuthProperty {
 	public static String BASE_URL;
 	public static String CLIENT_ID;
 	public static String REDIRECT_URI;
+	public static String CLIENT_SECRET;
 
 	public static final String KAKAO_OAUTH_QUERY_STRING =
 			"/oauth/authorize?response_type=code&client_id=%s&redirect_uri=%s";
@@ -26,4 +27,7 @@ public class OAuthProperty {
 	public void setRedirectUri(String redirectUri) {
 		REDIRECT_URI = redirectUri;
 	}
+
+	@Value("${KAKAO_SECRET}")
+	public void setClientSecret(String clientSecret) {CLIENT_SECRET = clientSecret;}
 }

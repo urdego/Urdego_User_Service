@@ -1,6 +1,5 @@
-package io.urdego.urdego_user_service.auth;
+package io.urdego.urdego_user_service.auth.jwt;
 
-import java.lang.management.LockInfo;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

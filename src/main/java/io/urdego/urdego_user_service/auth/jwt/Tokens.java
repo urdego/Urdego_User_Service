@@ -1,4 +1,4 @@
-package io.urdego.urdego_user_service.auth;
+package io.urdego.urdego_user_service.auth.jwt;
 
 import lombok.Builder;
 
