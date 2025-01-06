@@ -2,8 +2,8 @@ package io.urdego.urdego_user_service.auth.service;
 
 import io.urdego.urdego_user_service.auth.jwt.JwtTokenProvider;
 import io.urdego.urdego_user_service.domain.entity.User;
-import io.urdego.urdego_user_service.domain.entity.repository.UserRepository;
-import io.urdego.urdego_user_service.infra.kakao.dto.KakaoUserInfoDto;
+import io.urdego.urdego_user_service.domain.entity.dto.KakaoUserInfoDto;
+import io.urdego.urdego_user_service.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,12 +28,7 @@ public class KakaoAuthServiceImpl implements KakaoAuthService {
 
 		//닉네임 중복검사 false 시 User 저장
 		if(!userRepository.existsByEmail(userInfo.getKakaoAccount().getEmail())) {
-			User user = userRepository.save(User.builder()
-					.email(userInfo.getKakaoAccount().getEmail())
-					.nickname(userInfo.getKakaoAccount().getProfile().getNickname())
-					.profileImageUrl(userInfo.getKakaoAccount().getProfile().getProfileImage())
-					.platformId(userInfo.getId())
-					.build());
+			User user = User.createKakaoUser(userInfo);
 
 			//JWT 생성
 			return jwtTokenProvider.generateToken(user.getEmail());

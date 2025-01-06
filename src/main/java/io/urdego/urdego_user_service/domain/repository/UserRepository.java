@@ -1,8 +1,8 @@
-package io.urdego.urdego_user_service.domain.entity.repository;
+package io.urdego.urdego_user_service.domain.repository;
 
 import io.urdego.urdego_user_service.domain.entity.User;
 import java.util.Optional;
-import io.urdego.urdego_user_service.domain.entity.constant.PlatfromType;
+import io.urdego.urdego_user_service.common.enums.PlatformType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,5 +12,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	Optional<User> findByPlatformId(String platformId);
 
 	boolean existsByEmail(String Email);
-    Optional<User> findByPlatformIdAndPlatformType(String platformId, PlatfromType platformType);
+    Optional<User> findByPlatformIdAndPlatformType(String platformId, PlatformType platformType);
 }

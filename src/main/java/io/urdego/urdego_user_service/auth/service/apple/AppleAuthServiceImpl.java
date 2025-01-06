@@ -2,9 +2,8 @@ package io.urdego.urdego_user_service.infra.apple;
 
 import io.jsonwebtoken.Claims;
 import io.urdego.urdego_user_service.domain.entity.User;
-import io.urdego.urdego_user_service.domain.entity.constant.PlatfromType;
-import io.urdego.urdego_user_service.domain.entity.constant.Role;
-import io.urdego.urdego_user_service.domain.entity.repository.UserRepository;
+import io.urdego.urdego_user_service.common.enums.PlatformType;
+import io.urdego.urdego_user_service.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,16 +25,14 @@ public class AppleUserService {
         String nickname = claims.get("name", String.class);
         String email = claims.get("email", String.class);
 
-        Optional<User> existingUser = userRepository.findByPlatformIdAndPlatformType(platformId, PlatfromType.APPLE);
+        Optional<User> existingUser = userRepository.findByPlatformIdAndPlatformType(platformId, PlatformType.APPLE);
         if (existingUser.isPresent()) {
             return existingUser.get();
         }
 
         User newUser = User.builder()
-                .nickname(nickname != null ? nickname : "Apple User")
+                .email(email)
                 .platformId(platformId)
-                .platformType(PlatfromType.APPLE)
-                .pushAlarm(true)
                 .build();
 
         return userRepository.save(newUser);
