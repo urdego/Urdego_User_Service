@@ -1,6 +1,7 @@
-package io.urdego.urdego_user_service.auth.service;
+package io.urdego.urdego_user_service.auth.service.kakao;
 
 import io.urdego.urdego_user_service.auth.jwt.JwtTokenProvider;
+import io.urdego.urdego_user_service.auth.service.OAuthService;
 import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.domain.entity.dto.KakaoUserInfoDto;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
@@ -20,9 +21,9 @@ public class KakaoAuthServiceImpl implements KakaoAuthService {
 	}
 
 	@Override
-	public String login(String code) {
+	public String kakaoLogin(String code) {
 		//사용자 정보 가져오기
-		KakaoUserInfoDto userInfo = oAuthService.getOAuthProfile(code);
+		KakaoUserInfoDto userInfo = oAuthService.getKakaoOAuthProfile(code);
 
 		System.out.println("OAuthProfile: " + userInfo.getId());
 

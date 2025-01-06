@@ -1,7 +1,7 @@
 package io.urdego.urdego_user_service.api.kakao;
 
 import io.urdego.urdego_user_service.api.kakao.dto.KakaoConnectionResponse;
-import io.urdego.urdego_user_service.auth.service.KakaoAuthService;
+import io.urdego.urdego_user_service.auth.service.kakao.KakaoAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +27,7 @@ public class KakaoController {
 
 	@GetMapping("/callback")
 	public ResponseEntity<String> login(@RequestParam("code") String code){
-		String accessToken = kakaoAuthService.login(code);
+		String accessToken = kakaoAuthService.kakaoLogin(code);
 		return ResponseEntity.ok("AccessToken : " + accessToken);
 	}
 }
