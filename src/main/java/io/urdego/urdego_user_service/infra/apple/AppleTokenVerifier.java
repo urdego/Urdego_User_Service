@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
@@ -19,8 +18,6 @@ import java.util.Base64;
 @Component
 public class AppleTokenVerifier {
 
-    @Value("${apple.auth.public-key-url}")
-    private static String APPLE_PUBLIC_KEYS_URL;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public Claims verifyIdToken(String idToken) throws Exception {
@@ -48,7 +45,7 @@ public class AppleTokenVerifier {
 
     // Apple public key JSON으로 읽어오기
     private JsonNode fetchApplePublicKeys() throws Exception {
-        URL url = new URL(APPLE_PUBLIC_KEYS_URL);
+        URL url = new URL("https://appleid.apple.com/auth/keys");
         return objectMapper.readTree(url);
     }
 

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(
         name = "apple-auth-client",
-        url = "${apple.auth.token-url}",
+        url = "https://appleid.apple.com/auth/token",
         configuration = FeignConfig.class
 )
 public interface AppleAuthFeignClient {
