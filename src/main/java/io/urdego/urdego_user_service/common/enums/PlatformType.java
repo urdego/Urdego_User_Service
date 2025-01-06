@@ -1,6 +1,6 @@
 package io.urdego.urdego_user_service.common.enums;
 
-public enum PlatfromType {
+public enum PlatformType {
 	KAKAO,
 	APPLE
 }
