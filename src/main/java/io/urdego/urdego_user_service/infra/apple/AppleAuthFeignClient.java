@@ -1,7 +1,7 @@
 package io.urdego.urdego_user_service.infra.apple;
 
+import io.urdego.urdego_user_service.common.config.FeignConfig;
 import io.urdego.urdego_user_service.infra.apple.dto.AppleTokenReponse;
-import io.urdego.urdego_user_service.infra.feign.FeignConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
