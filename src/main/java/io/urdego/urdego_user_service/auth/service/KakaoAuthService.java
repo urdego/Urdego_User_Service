@@ -1,8 +1,6 @@
-package io.urdego.urdego_user_service.domain.service;
+package io.urdego.urdego_user_service.auth.service;
 
-import io.urdego.urdego_user_service.auth.jwt.Tokens;
-
-public interface OAuthService {
+public interface KakaoAuthService {
 	// 로그인 URL 생성
 	String getConnectionUrl();
 

@@ -1,4 +1,4 @@
-package io.urdego.urdego_user_service.auth;
+package io.urdego.urdego_user_service.auth.service;
 
 import static io.urdego.urdego_user_service.common.properties.OAuthProperty.BASE_URL;
 import static io.urdego.urdego_user_service.common.properties.OAuthProperty.CLIENT_ID;

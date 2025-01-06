@@ -1,9 +1,6 @@
-package io.urdego.urdego_user_service.domain.service;
+package io.urdego.urdego_user_service.auth.service;
 
-import io.urdego.urdego_user_service.auth.OAuthService;
 import io.urdego.urdego_user_service.auth.jwt.JwtTokenProvider;
-import io.urdego.urdego_user_service.auth.jwt.TokenManager;
-import io.urdego.urdego_user_service.auth.jwt.Tokens;
 import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.domain.entity.repository.UserRepository;
 import io.urdego.urdego_user_service.infra.kakao.dto.KakaoUserInfoDto;
@@ -12,20 +9,20 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class OAuthServiceImpl implements io.urdego.urdego_user_service.domain.service.OAuthService {
-	private final OAuthService oAuthClient;
+public class KakaoAuthServiceImpl implements KakaoAuthService {
+	private final OAuthService oAuthService;
 	private final UserRepository userRepository;
-	private final JwtTokenProvider jwrTokenProvider;
+	private final JwtTokenProvider jwtTokenProvider;
 
 	@Override
 	public String getConnectionUrl() {
-		return oAuthClient.getConnectionUrl();
+		return oAuthService.getConnectionUrl();
 	}
 
 	@Override
 	public String login(String code) {
 		//사용자 정보 가져오기
-		KakaoUserInfoDto userInfo = oAuthClient.getOAuthProfile(code);
+		KakaoUserInfoDto userInfo = oAuthService.getOAuthProfile(code);
 
 		System.out.println("OAuthProfile: " + userInfo.getId());
 
@@ -39,8 +36,8 @@ public class OAuthServiceImpl implements io.urdego.urdego_user_service.domain.se
 					.build());
 
 			//JWT 생성
-			return jwrTokenProvider.generateToken(user.getEmail());
+			return jwtTokenProvider.generateToken(user.getEmail());
 		}
-		return null;
+		return jwtTokenProvider.generateToken(userInfo.getKakaoAccount().getEmail());
 	}
 }
