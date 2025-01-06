@@ -1,10 +1,10 @@
-package io.urdego.urdego_user_service.auth.service;
+package io.urdego.urdego_user_service.auth.service.kakao;
 
 public interface KakaoAuthService {
 	// 로그인 URL 생성
 	String getConnectionUrl();
 
-	String login(String code);
+	String kakaoLogin(String code);
 	// access Token 받아오기
 
 	// refresh Token 갱신

@@ -1,4 +1,4 @@
-package io.urdego.urdego_user_service.auth.config;
+package io.urdego.urdego_user_service.common.config;
 
 import io.urdego.urdego_user_service.auth.jwt.RefreshToken; // RefreshToken 클래스 import
 import org.springframework.beans.factory.annotation.Value;

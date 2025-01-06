@@ -1,4 +1,4 @@
-package io.urdego.urdego_user_service.domain.entity.constant;
+package io.urdego.urdego_user_service.common.enums;
 
 import java.util.Arrays;
 import lombok.Getter;

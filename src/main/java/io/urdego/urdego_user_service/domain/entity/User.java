@@ -1,7 +1,9 @@
 package io.urdego.urdego_user_service.domain.entity;
 
-import io.urdego.urdego_user_service.domain.entity.constant.PlatfromType;
-import io.urdego.urdego_user_service.domain.entity.constant.Role;
+import io.urdego.urdego_user_service.common.enums.PlatformType;
+import io.urdego.urdego_user_service.common.enums.Role;
+import io.urdego.urdego_user_service.domain.entity.dto.AppleUserInfoDto;
+import io.urdego.urdego_user_service.domain.entity.dto.KakaoUserInfoDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,14 +12,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "users")
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity{
 	@Id
@@ -31,7 +32,7 @@ public class User extends BaseTimeEntity{
 	//APPLE, KAKAO
 	@Column(name = "platform_type", nullable = false)
 	@Enumerated(EnumType.STRING)
-	private PlatfromType platformType;
+	private PlatformType platformType;
 
 	private String email;
 
@@ -51,14 +52,26 @@ public class User extends BaseTimeEntity{
 	//탈퇴 이유
 	private String withDrawalReason;
 
-	@Builder
-	public User(String nickname, String email, String profileImageUrl, Long platformId){
-		this.nickname = nickname;
-		this.email = email;
-		this.profileImageUrl = profileImageUrl;
-		this.platformId = platformId.toString();
-		this.role = Role.USER;
-		this.platformType = PlatfromType.KAKAO;
+	public static User createAppleUser(AppleUserInfoDto userInfo) {
+		return User.builder()
+				.nickname(userInfo.getNickname())
+				.email(userInfo.getEmail())
+				.platformId(userInfo.getPlatformId())
+				.platformType(userInfo.getPlatformType())
+				.role(Role.USER)
+				.profileImageUrl(null)
+				.build();
+	}
+
+	public static User createKakaoUser(KakaoUserInfoDto userInfo) {
+		return User.builder()
+				.nickname(userInfo.getKakaoAccount().getProfile().getNickname())
+				.email(userInfo.getKakaoAccount().getEmail())
+				.profileImageUrl(userInfo.getKakaoAccount().getProfile().getProfileImage())
+				.platformId(userInfo.getId().toString())
+				.platformType(userInfo.getType())
+				.role(Role.USER)
+				.build();
 	}
 
 }

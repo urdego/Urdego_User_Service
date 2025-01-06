@@ -1,7 +1,6 @@
 package io.urdego.urdego_user_service.infra.kakao;
 
-import io.urdego.urdego_user_service.infra.kakao.dto.KakaoResourceDto;
-import io.urdego.urdego_user_service.infra.kakao.dto.KakaoUserInfoDto;
+import io.urdego.urdego_user_service.domain.entity.dto.KakaoUserInfoDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
