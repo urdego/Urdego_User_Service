@@ -2,6 +2,7 @@ package io.urdego.urdego_user_service.auth.service.kakao;
 
 import io.urdego.urdego_user_service.auth.jwt.JwtTokenProvider;
 import io.urdego.urdego_user_service.auth.service.OAuthService;
+import io.urdego.urdego_user_service.common.properties.KakaoOAuthProperty;
 import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.domain.entity.dto.KakaoUserInfoDto;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
@@ -14,10 +15,11 @@ public class KakaoAuthServiceImpl implements KakaoAuthService {
 	private final OAuthService oAuthService;
 	private final UserRepository userRepository;
 	private final JwtTokenProvider jwtTokenProvider;
+	private final KakaoOAuthProperty property;
 
 	@Override
 	public String getConnectionUrl() {
-		return oAuthService.getConnectionUrl();
+		return oAuthService.getConnectionUrl(property);
 	}
 
 	@Override
