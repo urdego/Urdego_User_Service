@@ -21,7 +21,6 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseTimeEntity {
-
 	@CreatedDate
 	@DateTimeFormat(iso = ISO.DATE_TIME)
 	protected LocalDateTime createdAt;
