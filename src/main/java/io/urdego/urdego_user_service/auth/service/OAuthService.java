@@ -10,7 +10,7 @@ public interface OAuthService {
 		return property.getBaseUrl() +
 				String.format(KakaoOAuthProperty.KAKAO_OAUTH_QUERY_STRING,
 						property.getClientId(),
-						property.getRedirectUri());
+						property.getRedirectUrl());
 	}
 
 	KakaoUserInfoDto getKakaoOAuthProfile(String code);

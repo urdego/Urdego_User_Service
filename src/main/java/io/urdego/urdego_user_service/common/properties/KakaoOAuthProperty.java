@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class KakaoOAuthProperty {
 	private String baseUrl;
 	private String clientId;
-	private String redirectUri;
+	private String redirectUrl;
 	private String clientSecret;
 
 	public static final String KAKAO_OAUTH_QUERY_STRING =
