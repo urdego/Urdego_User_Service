@@ -2,6 +2,8 @@ package io.urdego.urdego_user_service.infra.apple;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.urdego.urdego_user_service.common.properties.AppleOAuthProperty;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,28 +15,19 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Date;
 
 @Component
+@RequiredArgsConstructor
 public class AppleClientSecretGenerator {
-    @Value("${apple.team-id}")
-    private static String TEAM_ID;
 
-    @Value("${apple.aud}")
-    private static String CLIENT_ID;
-
-    @Value("${apple.key.id}")
-    private static String KEY_ID;
-
-    @Value("${apple.key.path}")
-    private static String KEY_PATH;
+    private final AppleOAuthProperty property;
 
     public String generateClientSecret() throws Exception {
 
         PrivateKey privateKey = getPrivateKey();
 
         return Jwts.builder()
-                .setHeaderParam("kid", KEY_ID)
-                .setIssuer(TEAM_ID)
-                .setSubject(CLIENT_ID)
-                .setAudience("https://appleid.apple.com")
+                .setHeaderParam("kid", property.getKeyId())
+                .setIssuer(property.getIss())
+                .setAudience(property.getAud())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 3600 * 1000))
                 .signWith(privateKey, SignatureAlgorithm.ES256)
@@ -43,7 +36,7 @@ public class AppleClientSecretGenerator {
     }
 
     private PrivateKey getPrivateKey() throws Exception {
-        byte[] keyBytes = Files.readAllBytes(Paths.get(KEY_PATH.replace("classpath:", "src/main/resources/")));
+        byte[] keyBytes = Files.readAllBytes(Paths.get(property.getKeyPath().replace("classpath:", "src/main/resources/")));
         PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
         KeyFactory keyFactory = KeyFactory.getInstance("EC");
         return keyFactory.generatePrivate(spec);
