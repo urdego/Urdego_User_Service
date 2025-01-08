@@ -1,6 +1,5 @@
 package io.urdego.urdego_user_service.auth.service.apple;
 
-import io.urdego.urdego_user_service.auth.jwt.JwtTokenProvider;
 import io.urdego.urdego_user_service.auth.service.OAuthService;
 import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.domain.entity.dto.AppleUserInfoDto;
@@ -20,7 +19,7 @@ public class AppleAuthServiceImpl implements AppleAuthService {
     private final AppleTokenVerifier appleTokenVerifier;
     private final UserRepository userRepository;
     private final OAuthService oAuthService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtil jwtUtil;
 
     @Override
     public String appleLogin(String idToken) throws Exception {
@@ -32,9 +31,9 @@ public class AppleAuthServiceImpl implements AppleAuthService {
         Optional<User> existingUser = userRepository.findByPlatformIdAndPlatformType(userInfo.getPlatformId(), userInfo.getPlatformType());
         if (existingUser.isEmpty()) {
             User newUser = User.createAppleUser(userInfo);
-            return jwtTokenProvider.generateToken(newUser.getEmail());
+            return jwtUtil.generateToken(newUser.getEmail());
         }
 
-        return jwtTokenProvider.generateToken(userInfo.getEmail());
+        return jwtUtil.generateToken(userInfo.getEmail());
     }
 }

@@ -22,7 +22,7 @@ public class OAuthServiceImpl implements OAuthService {
 
 	@Override
 	public KakaoUserInfoDto getKakaoOAuthProfile(String code) {
-		KakaoTokenDto kakaoTokenResponse = kakaoAuthFeignClient.getAccessToken("authorization_code", property.getClientId(), property.getRedirectUri(), code);
+		KakaoTokenDto kakaoTokenResponse = kakaoAuthFeignClient.getAccessToken("authorization_code", property.getClientId(), property.getRedirectUrl(), code);
 		return kakaoProfileFeignClient.getUserInfo("Bearer " + kakaoTokenResponse.getAccessToken());
 	}
 
