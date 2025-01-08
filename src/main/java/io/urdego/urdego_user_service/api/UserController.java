@@ -30,8 +30,7 @@ public class UserController {
 	@DeleteMapping("/users/{userId}")
 	public ResponseEntity<Void> deleteUser(@PathVariable Long userId,
 			@RequestBody DrawalRequest drawalRequest) {
-		userService.
 
-
+		return ResponseEntity.ok().build();
 	}
 }
