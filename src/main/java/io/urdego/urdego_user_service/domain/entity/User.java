@@ -74,4 +74,9 @@ public class User extends BaseTimeEntity{
 				.build();
 	}
 
+	public void setRoleToDelete(String withDrawalReason) {
+		this.role = Role.DELETED;
+		this.withDrawalReason = withDrawalReason;
+	}
+
 }

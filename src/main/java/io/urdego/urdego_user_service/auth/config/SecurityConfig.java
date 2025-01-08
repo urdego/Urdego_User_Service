@@ -22,6 +22,7 @@ public class SecurityConfig {
 				.authorizeHttpRequests(authorizeRequests ->
 						authorizeRequests
 								.requestMatchers("/api/user-service/api-docs/**").permitAll()
+
 				)
 				.sessionManagement((sessionManagement) ->
 						sessionManagement

@@ -1,5 +1,6 @@
 package io.urdego.urdego_user_service.domain.service;
 
+import io.urdego.urdego_user_service.api.dto.DrawalRequest;
 import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.domain.entity.dto.UserResponse;
 import io.urdego.urdego_user_service.domain.entity.dto.UserSignUpRequest;
@@ -39,5 +40,13 @@ public class UserServiceImpl implements UserService {
 				.userId(user.getId())
 				.nickname(user.getNickname())
 				.build();
+	}
+
+	@Override
+	public UserResponse deleteUser(Long id, DrawalRequest drawalRequest) {
+		User user = userRepository.findById(id).orElse(null);
+		String reasonForDrawalRequest = drawalRequest.withDrwalReason();
+		user.setRoleToDelete(reasonForDrawalRequest);
+		userRepository.save(user);
 	}
 }
