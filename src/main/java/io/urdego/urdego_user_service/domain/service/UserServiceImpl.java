@@ -1,9 +1,8 @@
 package io.urdego.urdego_user_service.domain.service;
 
-import io.urdego.urdego_user_service.api.dto.DrawalRequest;
 import io.urdego.urdego_user_service.domain.entity.User;
-import io.urdego.urdego_user_service.domain.entity.dto.UserResponse;
-import io.urdego.urdego_user_service.domain.entity.dto.UserSignUpRequest;
+import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
+import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,10 +42,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserResponse deleteUser(Long id, DrawalRequest drawalRequest) {
+	public void deleteUser(Long id, String drawalRequest) {
 		User user = userRepository.findById(id).orElse(null);
-		String reasonForDrawalRequest = drawalRequest.withDrwalReason();
-		user.setRoleToDelete(reasonForDrawalRequest);
+		user.setRoleAndDrwalReason(drawalRequest);
 		userRepository.save(user);
 	}
 }
