@@ -10,8 +10,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "oauth.apple")
 public class AppleOAuthProperty {
-    private String authTokenUrl;
-    private String publicKeyUrl;
     private String redirectUri;
     private String iss;
     private String aud;
