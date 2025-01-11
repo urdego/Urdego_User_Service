@@ -56,7 +56,7 @@ jobs:
           docker rmi $(docker images --format "{{.Repository}}:{{.Tag}}" | grep 'user_service:latest') || echo "No user_service image to remove"
       
       # 도커 컴포즈 실행
-      - name: 도커 컴포즈 실행
+      - name: 도커 컴포즈 실행 
         run: |
           docker-compose up -d
         
