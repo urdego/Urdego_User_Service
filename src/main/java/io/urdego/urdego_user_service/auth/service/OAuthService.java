@@ -1,8 +1,8 @@
 package io.urdego.urdego_user_service.auth.service;
 
 import io.urdego.urdego_user_service.common.properties.KakaoOAuthProperty;
-import io.urdego.urdego_user_service.domain.entity.dto.AppleUserInfoDto;
-import io.urdego.urdego_user_service.domain.entity.dto.KakaoUserInfoDto;
+import io.urdego.urdego_user_service.api.apple.dto.AppleUserInfoDto;
+import io.urdego.urdego_user_service.api.kakao.dto.KakaoUserInfoDto;
 
 public interface OAuthService {
 	default String getConnectionUrl(KakaoOAuthProperty property){

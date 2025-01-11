@@ -1,4 +1,4 @@
-package io.urdego.urdego_user_service.common.config;
+package io.urdego.urdego_user_service.auth.redis;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -24,8 +24,8 @@ public class RedisConfig {
 	}
 
 	@Bean
-	public RedisTemplate<String, RefreshToken> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-		RedisTemplate<String, RefreshToken> redisTemplate = new RedisTemplate<>();
+	public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+		RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
 		redisTemplate.setConnectionFactory(redisConnectionFactory);
 
 		// Key와 Value에 대한 Serializer 설정

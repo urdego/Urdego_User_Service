@@ -1,10 +1,11 @@
 package io.urdego.urdego_user_service.auth.service.kakao;
 
-import io.urdego.urdego_user_service.auth.jwt.JwtTokenProvider;
+import io.urdego.urdego_user_service.auth.jwt.JwtService;
+import io.urdego.urdego_user_service.auth.jwt.TokenRes;
 import io.urdego.urdego_user_service.auth.service.OAuthService;
 import io.urdego.urdego_user_service.common.properties.KakaoOAuthProperty;
 import io.urdego.urdego_user_service.domain.entity.User;
-import io.urdego.urdego_user_service.domain.entity.dto.KakaoUserInfoDto;
+import io.urdego.urdego_user_service.api.kakao.dto.KakaoUserInfoDto;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,8 +15,8 @@ import org.springframework.stereotype.Service;
 public class KakaoAuthServiceImpl implements KakaoAuthService {
 	private final OAuthService oAuthService;
 	private final UserRepository userRepository;
-	private final JwtTokenProvider jwtTokenProvider;
 	private final KakaoOAuthProperty property;
+	private final JwtService jwtService;
 
 	@Override
 	public String getConnectionUrl() {
@@ -23,7 +24,7 @@ public class KakaoAuthServiceImpl implements KakaoAuthService {
 	}
 
 	@Override
-	public String kakaoLogin(String code) {
+	public TokenRes kakaoLogin(String code) {
 		//사용자 정보 가져오기
 		KakaoUserInfoDto userInfo = oAuthService.getKakaoOAuthProfile(code);
 
@@ -38,8 +39,8 @@ public class KakaoAuthServiceImpl implements KakaoAuthService {
 			userRepository.save(user);
 
 			//JWT 생성
-			return jwtTokenProvider.generateToken(user.getEmail());
+			return jwtService.createJwt(userInfo.getId().toString());
 		}
-		return jwtTokenProvider.generateToken(userInfo.getKakaoAccount().getEmail());
+		return jwtService.createJwt(userInfo.getId().toString());
 	}
 }
