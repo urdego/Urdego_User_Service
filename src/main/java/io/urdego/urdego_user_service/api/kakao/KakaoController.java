@@ -1,6 +1,7 @@
 package io.urdego.urdego_user_service.api.kakao;
 
 import io.urdego.urdego_user_service.api.kakao.dto.KakaoConnectionResponse;
+import io.urdego.urdego_user_service.auth.jwt.TokenRes;
 import io.urdego.urdego_user_service.auth.service.kakao.KakaoAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +27,9 @@ public class KakaoController {
 	}
 
 	@GetMapping("/callback")
-	public ResponseEntity<String> login(@RequestParam("code") String code){
-		String jwtToken = kakaoAuthService.kakaoLogin(code);
-		return ResponseEntity.ok("JWT Token : " + jwtToken);
+	public ResponseEntity<TokenRes> login(@RequestParam("code") String code){
+		TokenRes jwtToken = kakaoAuthService.kakaoLogin(code);
+		return ResponseEntity.ok(jwtToken);
 	}
 }
 

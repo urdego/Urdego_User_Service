@@ -1,22 +1,22 @@
-package io.urdego.urdego_user_service.auth.config;
+package io.urdego.urdego_user_service.auth.service;
 
 import io.urdego.urdego_user_service.common.enums.Role;
 import io.urdego.urdego_user_service.domain.entity.User;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Getter
+@AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
-	private User user;
 
-	public CustomUserDetails(User user) {
-		this.user = user;
-	}
+	private User user;
 
 	private GrantedAuthority getAuthority(Role role) {
 		return new SimpleGrantedAuthority("ROLE_" + role.name());
@@ -32,6 +32,25 @@ public class CustomUserDetails implements UserDetails {
 			case ADMIN : authorities.add(getAuthority(Role.ADMIN));
 		}
 		return authorities;
+	}
+
+	@Override
+	public String getPassword() {
+		return null;
+	}
+
+	// 넘버링에 따라 결정
+	@Override
+	public String getUsername() {
+		return user.getPlatformId();
+	}
+
+	public String getEmail() {
+		return user.getEmail();
+	}
+
+	public String getNickname() {
+		return user.getNickname();
 	}
 
 	@Override
@@ -51,16 +70,6 @@ public class CustomUserDetails implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		return UserDetails.super.isEnabled();
-	}
-
-	@Override
-	public String getPassword() {
-		return "";
-	}
-
-	@Override
-	public String getUsername() {
-		return user.getNickname();
+		return !user.getRole().equals(Role.DELETED);
 	}
 }

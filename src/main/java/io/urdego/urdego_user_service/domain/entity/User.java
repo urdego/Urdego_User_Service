@@ -2,8 +2,8 @@ package io.urdego.urdego_user_service.domain.entity;
 
 import io.urdego.urdego_user_service.common.enums.PlatformType;
 import io.urdego.urdego_user_service.common.enums.Role;
-import io.urdego.urdego_user_service.domain.entity.dto.AppleUserInfoDto;
-import io.urdego.urdego_user_service.domain.entity.dto.KakaoUserInfoDto;
+import io.urdego.urdego_user_service.api.apple.dto.AppleUserInfoDto;
+import io.urdego.urdego_user_service.api.kakao.dto.KakaoUserInfoDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -74,7 +74,7 @@ public class User extends BaseTimeEntity{
 				.build();
 	}
 
-	public void setRoleToDelete(String withDrawalReason) {
+	public void setRoleAndDrwalReason(String withDrawalReason) {
 		this.role = Role.DELETED;
 		this.withDrawalReason = withDrawalReason;
 	}

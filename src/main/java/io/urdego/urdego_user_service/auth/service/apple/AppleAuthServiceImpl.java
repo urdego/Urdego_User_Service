@@ -1,11 +1,15 @@
 package io.urdego.urdego_user_service.auth.service.apple;
 
+import io.urdego.urdego_user_service.auth.jwt.JwtService;
+import io.urdego.urdego_user_service.auth.jwt.JwtUtil;
+import io.urdego.urdego_user_service.auth.jwt.TokenRes;
 import io.urdego.urdego_user_service.auth.service.OAuthService;
 import io.urdego.urdego_user_service.domain.entity.User;
-import io.urdego.urdego_user_service.domain.entity.dto.AppleUserInfoDto;
+import io.urdego.urdego_user_service.api.apple.dto.AppleUserInfoDto;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
 import io.urdego.urdego_user_service.infra.apple.AppleTokenVerifier;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.Token;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,10 +23,10 @@ public class AppleAuthServiceImpl implements AppleAuthService {
     private final AppleTokenVerifier appleTokenVerifier;
     private final UserRepository userRepository;
     private final OAuthService oAuthService;
-    private final JwtUtil jwtUtil;
+    private final JwtService jwtService;
 
     @Override
-    public String appleLogin(String idToken) throws Exception {
+    public TokenRes appleLogin(String idToken) throws Exception {
         // 사용자 정보 가져오기
         AppleUserInfoDto userInfo = oAuthService.getAppleOAuthProfile(idToken);
 
@@ -31,9 +35,9 @@ public class AppleAuthServiceImpl implements AppleAuthService {
         Optional<User> existingUser = userRepository.findByPlatformIdAndPlatformType(userInfo.getPlatformId(), userInfo.getPlatformType());
         if (existingUser.isEmpty()) {
             User newUser = User.createAppleUser(userInfo);
-            return jwtUtil.generateToken(newUser.getEmail());
+            return jwtService.createJwt(newUser.getPlatformId());
         }
 
-        return jwtUtil.generateToken(userInfo.getEmail());
+        return jwtService.createJwt(userInfo.getPlatformId());
     }
 }
