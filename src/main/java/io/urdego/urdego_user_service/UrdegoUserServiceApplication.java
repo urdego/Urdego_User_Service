@@ -15,4 +15,5 @@ public class UrdegoUserServiceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(UrdegoUserServiceApplication.class, args);
 	}
+	
 }
