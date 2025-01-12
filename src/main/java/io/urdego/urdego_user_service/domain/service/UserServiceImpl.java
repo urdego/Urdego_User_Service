@@ -28,6 +28,11 @@ public class UserServiceImpl implements UserService {
 		User user = userRepository.findById(userId).orElse(null);
 		return UserResponse.builder()
 				.userId(user.getId())
+				.email(user.getEmail())
+				.platformId(user.getPlatformId())
+				.platfromType(user.getPlatformType())
+				.role(user.getRole())
+				.profileImageUrl(user.getProfileImageUrl())
 				.nickname(user.getNickname())
 				.build();
 	}
