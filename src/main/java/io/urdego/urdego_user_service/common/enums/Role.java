@@ -12,16 +12,7 @@ public enum Role {
 
 	USER("유저"),
 
-	ADMIN("관리자"),
-
-	DELETED("삭제된 회원");
-
+	ADMIN("관리자");
 	private final String role;
 
-	public static Role findByRole(final String role) {
-		return Arrays.stream(Role.values())
-				.filter(userRole -> userRole.role.equals(role))
-				.findFirst()
-				.orElse(null);
-	}
 }
