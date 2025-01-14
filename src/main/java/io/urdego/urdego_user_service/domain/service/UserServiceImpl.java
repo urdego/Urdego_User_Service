@@ -1,5 +1,7 @@
 package io.urdego.urdego_user_service.domain.service;
 
+import io.urdego.urdego_user_service.common.enums.PlatformType;
+import io.urdego.urdego_user_service.common.enums.Role;
 import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
@@ -15,9 +17,15 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Long signUp(UserSignUpRequest userSignUpRequest) {
+		PlatformType platformType = PlatformType.valueOf(userSignUpRequest.platformType().toUpperCase());
 		User user = userRepository.save(
 				User.builder()
 						.nickname(userSignUpRequest.nickname())
+						.email(userSignUpRequest.email())
+						.platformId(userSignUpRequest.platformId())
+						.platformType(platformType)
+						.role(Role.USER)
+						.profileImageUrl(userSignUpRequest.profileImageUrl())
 						.build()
 		);
 		return user.getId();

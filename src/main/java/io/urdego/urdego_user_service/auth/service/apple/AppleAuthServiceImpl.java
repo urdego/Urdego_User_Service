@@ -1,3 +1,4 @@
+/*
 package io.urdego.urdego_user_service.auth.service.apple;
 
 import io.urdego.urdego_user_service.auth.jwt.JwtService;
@@ -41,3 +42,4 @@ public class AppleAuthServiceImpl implements AppleAuthService {
         return jwtService.createJwt(userInfo.getPlatformId());
     }
 }
+*/

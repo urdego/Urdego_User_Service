@@ -1,3 +1,4 @@
+/*
 package io.urdego.urdego_user_service.api.apple;
 
 import io.urdego.urdego_user_service.auth.jwt.TokenRes;
@@ -27,3 +28,4 @@ public class AppleController {
         return ResponseEntity.ok(accessToken);
     }
 }
+*/
