@@ -13,12 +13,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "users")
 @Getter
 @Builder
 @AllArgsConstructor
+@SQLRestriction("is_deleted IS NULL")
+@SQLDelete(sql = "UPDATE users SET is_deleted = TRUE WHERE id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity{
 	@Id
@@ -49,6 +53,9 @@ public class User extends BaseTimeEntity{
 	@Column(name = "push_alarm")
 	private Boolean pushAlarm;
 
+	@Column(name = "is_deleted")
+	private Boolean isDeleted;
+
 	//탈퇴 이유
 	private String withDrawalReason;
 
@@ -75,7 +82,7 @@ public class User extends BaseTimeEntity{
 	}
 
 	public void setRoleAndDrwalReason(String withDrawalReason) {
-		this.role = Role.DELETED;
+		this.isDeleted = true;
 		this.withDrawalReason = withDrawalReason;
 	}
 

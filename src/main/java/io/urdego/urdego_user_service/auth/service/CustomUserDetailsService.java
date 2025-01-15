@@ -1,3 +1,4 @@
+/*
 package io.urdego.urdego_user_service.auth.service;
 
 import io.urdego.urdego_user_service.domain.entity.User;
@@ -22,3 +23,4 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new CustomUserDetails(user);
     }
 }
+*/

@@ -1,5 +1,8 @@
 package io.urdego.urdego_user_service.domain.service;
 
+import io.urdego.urdego_user_service.common.enums.PlatformType;
+import io.urdego.urdego_user_service.common.enums.Role;
+import io.urdego.urdego_user_service.common.exception.user.NotFoundUserException;
 import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
@@ -15,9 +18,14 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Long signUp(UserSignUpRequest userSignUpRequest) {
+		PlatformType platformType = PlatformType.valueOf(userSignUpRequest.platformType().toUpperCase());
 		User user = userRepository.save(
 				User.builder()
 						.nickname(userSignUpRequest.nickname())
+						.email(userSignUpRequest.email())
+						.platformId(userSignUpRequest.platformId())
+						.platformType(platformType)
+						.role(Role.USER)
 						.build()
 		);
 		return user.getId();
@@ -25,16 +33,23 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserResponse findByUserId(Long userId) {
-		User user = userRepository.findById(userId).orElse(null);
+		User user = userRepository.findById(userId)
+				.orElseThrow(()-> NotFoundUserException.EXCEPTION);
 		return UserResponse.builder()
 				.userId(user.getId())
+				.email(user.getEmail())
+				.platformId(user.getPlatformId())
+				.platfromType(user.getPlatformType())
+				.role(user.getRole())
+				.profileImageUrl(user.getProfileImageUrl())
 				.nickname(user.getNickname())
 				.build();
 	}
 
 	@Override
 	public UserResponse findByNickname(String nickname) {
-		User user = userRepository.findByNickname(nickname).orElse(null);
+		User user = userRepository.findByNickname(nickname)
+				.orElseThrow(()-> NotFoundUserException.EXCEPTION);
 		return UserResponse.builder()
 				.userId(user.getId())
 				.nickname(user.getNickname())

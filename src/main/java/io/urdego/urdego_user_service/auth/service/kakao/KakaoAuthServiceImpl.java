@@ -1,3 +1,4 @@
+/*
 package io.urdego.urdego_user_service.auth.service.kakao;
 
 import io.urdego.urdego_user_service.auth.jwt.JwtService;
@@ -44,3 +45,4 @@ public class KakaoAuthServiceImpl implements KakaoAuthService {
 		return jwtService.createJwt(userInfo.getId().toString());
 	}
 }
+*/

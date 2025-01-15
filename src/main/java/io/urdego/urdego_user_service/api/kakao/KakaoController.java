@@ -1,3 +1,4 @@
+/*
 package io.urdego.urdego_user_service.api.kakao;
 
 import io.urdego.urdego_user_service.api.kakao.dto.KakaoConnectionResponse;
@@ -33,3 +34,4 @@ public class KakaoController {
 	}
 }
 
+*/

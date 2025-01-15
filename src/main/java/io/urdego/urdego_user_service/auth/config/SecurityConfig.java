@@ -1,3 +1,4 @@
+/*
 package io.urdego.urdego_user_service.auth.config;
 
 import io.urdego.urdego_user_service.auth.jwt.JwtFilter;
@@ -48,3 +49,4 @@ public class SecurityConfig {
 	}
 
 }
+*/

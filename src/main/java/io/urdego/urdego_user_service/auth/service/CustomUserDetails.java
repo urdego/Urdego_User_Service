@@ -1,3 +1,4 @@
+/*
 package io.urdego.urdego_user_service.auth.service;
 
 import io.urdego.urdego_user_service.common.enums.Role;
@@ -73,3 +74,4 @@ public class CustomUserDetails implements UserDetails {
 		return !user.getRole().equals(Role.DELETED);
 	}
 }
+*/
