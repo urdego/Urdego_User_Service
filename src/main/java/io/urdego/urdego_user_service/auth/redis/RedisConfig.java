@@ -1,3 +1,4 @@
+/*
 package io.urdego.urdego_user_service.auth.redis;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -35,3 +36,4 @@ public class RedisConfig {
 		return redisTemplate;
 	}
 }
+*/
