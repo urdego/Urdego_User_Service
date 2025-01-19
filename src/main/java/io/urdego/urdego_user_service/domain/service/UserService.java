@@ -1,17 +1,25 @@
 package io.urdego.urdego_user_service.domain.service;
 
+import io.urdego.urdego_user_service.api.user.dto.request.ChangeNicknameRequest;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
+import io.urdego.urdego_user_service.common.enums.NicknameVerficationResult;
+import io.urdego.urdego_user_service.domain.entity.User;
 
 public interface UserService {
-	//save
-	Long signUp(UserSignUpRequest userSignUpRequest);
-
-	//delete
-	void deleteUser(Long id, String drawalRequest);
+	//create
+	UserResponse signUp(UserSignUpRequest userSignUpRequest);
 
 	//read
 	UserResponse findByUserId(Long userId);
-	UserResponse findByNickname(String nickname);
+
+	//Validate Nickname
+	NicknameVerficationResult verifyNickname (String nickname);
+
+	//update Nickname
+	User updateNickname(Long userId, ChangeNicknameRequest changeNicknameRequest);
+
+	//delete
+	void deleteUser(Long id, String drawalRequest);
 
 }

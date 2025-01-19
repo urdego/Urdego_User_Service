@@ -1,3 +1,4 @@
+/*
 package io.urdego.urdego_user_service.auth.config;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -40,3 +41,4 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowCredentials(true);
     }
 }
+*/

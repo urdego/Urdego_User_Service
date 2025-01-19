@@ -86,4 +86,8 @@ public class User extends BaseTimeEntity{
 		this.withDrawalReason = withDrawalReason;
 	}
 
+	public void updateNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
 }
