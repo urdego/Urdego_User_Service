@@ -4,6 +4,7 @@ import io.urdego.urdego_user_service.common.enums.PlatformType;
 import io.urdego.urdego_user_service.common.enums.Role;
 import io.urdego.urdego_user_service.api.apple.dto.AppleUserInfoDto;
 import io.urdego.urdego_user_service.api.kakao.dto.KakaoUserInfoDto;
+import io.urdego.urdego_user_service.common.enums.UserCharacter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -48,6 +49,10 @@ public class User extends BaseTimeEntity{
 
 	@Column(name = "profile_image")
 	private String profileImageUrl;
+
+	// 유저 캐릭터
+	@Column(name ="user_character")
+	private UserCharacter userCharacter;
 
 	//푸시알림 수신 여부
 	@Column(name = "push_alarm")

@@ -1,14 +1,14 @@
 package io.urdego.urdego_user_service.domain.service;
 
 import io.urdego.urdego_user_service.api.user.dto.request.ChangeNicknameRequest;
-import io.urdego.urdego_user_service.common.enums.NicknameVerficationResult;
+import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
+import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
+import io.urdego.urdego_user_service.common.enums.NicknameVerificationResult;
 import io.urdego.urdego_user_service.common.enums.PlatformType;
 import io.urdego.urdego_user_service.common.enums.Role;
 import io.urdego.urdego_user_service.common.exception.user.InappropriateNicknameUserException;
 import io.urdego.urdego_user_service.common.exception.user.NotFoundUserException;
 import io.urdego.urdego_user_service.domain.entity.User;
-import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
-import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,6 @@ public class UserServiceImpl implements UserService {
 						.role(Role.USER)
 						.build()
 		);
-
 		return UserResponse.from(user);
 	}
 
@@ -45,11 +44,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public NicknameVerficationResult verifyNickname(String nickname) {
+	public NicknameVerificationResult verifyNickname(String nickname) {
 		if(userRepository.existsByNickname(nickname)) {
-			return NicknameVerficationResult.DUPLICATE;
+			return NicknameVerificationResult.DUPLICATE;
 		}
-		return NicknameVerficationResult.PERMIT;
+		return NicknameVerificationResult.PERMIT;
 	}
 
 	@Override

@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum NicknameVerficationResult {
+public enum NicknameVerificationResult {
     PERMIT("PERMIT"),
     DUPLICATE("DUPLICATE"),
     INAPPROPRIATENESS("INAPPROPRIATENESS");

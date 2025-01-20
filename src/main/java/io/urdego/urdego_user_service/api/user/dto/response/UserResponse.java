@@ -10,7 +10,7 @@ public record UserResponse(
 		String email,
 		String nickname,
 		String platformId,
-		PlatformType platfromType,
+		PlatformType platformType,
 		String profileImageUrl,
 		Role role
 ) {

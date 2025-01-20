@@ -12,7 +12,7 @@ import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
 //import io.urdego.urdego_user_service.auth.jwt.JwtService;
 import io.urdego.urdego_user_service.auth.jwt.TokenRes;
-import io.urdego.urdego_user_service.common.enums.NicknameVerficationResult;
+import io.urdego.urdego_user_service.common.enums.NicknameVerificationResult;
 import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.domain.service.UserService;
 import io.urdego.urdego_user_service.domain.service.UserServiceImpl;
@@ -86,7 +86,7 @@ public class UserController {
 	@ApiResponse(responseCode = "200", description = " 응답 예시 : PERMIN / DUPlICATED")
 	@Operation(summary = "닉네임 중복확인")
 	public ResponseEntity<String> verifyNickname(@RequestParam("nickname") String nickname) {
-		NicknameVerficationResult result = userService.verifyNickname(nickname);
+		NicknameVerificationResult result = userService.verifyNickname(nickname);
 		return ResponseEntity.ok(result.getStatus());
 	}
 
