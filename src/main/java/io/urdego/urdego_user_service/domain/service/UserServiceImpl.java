@@ -40,17 +40,8 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserResponse findByUserId(Long userId) {
-		User user = userRepository.findById(userId)
-				.orElseThrow(()-> NotFoundUserException.EXCEPTION);
-		return UserResponse.builder()
-				.userId(user.getId())
-				.email(user.getEmail())
-				.platformId(user.getPlatformId())
-				.platfromType(user.getPlatformType())
-				.role(user.getRole())
-				.profileImageUrl(user.getProfileImageUrl())
-				.nickname(user.getNickname())
-				.build();
+		User user = readByUserId(userId);
+		return UserResponse.from(user);
 	}
 
 	@Override
@@ -62,19 +53,26 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void deleteUser(Long id, String drawalRequest) {
-		User user = userRepository.findById(id).orElse(null);
+	public void deleteUser(Long userId, String drawalRequest) {
+		User user = readByUserId(userId);
 		user.setRoleAndDrwalReason(drawalRequest);
 		userRepository.save(user);
 	}
 
 	@Override
-	public User updateNickname(Long userId, ChangeNicknameRequest changeNicknameRequest) {
-		User user = userRepository.findById(userId).orElseThrow(() -> NotFoundUserException.EXCEPTION);
+	public UserResponse updateNickname(Long userId, ChangeNicknameRequest changeNicknameRequest) {
+		User user = readByUserId(userId);
 		if(!changeNicknameRequest.verificationResult().equals("PERMIT")) {
 			throw InappropriateNicknameUserException.EXCEPTION;
 		}
 		user.updateNickname(changeNicknameRequest.newNickname());
-		return userRepository.save(user);
+		UserResponse response = UserResponse.from(userRepository.save(user));
+		return response;
+	}
+
+	// 공통
+	private User readByUserId(Long userId) {
+		User user = userRepository.findById(userId).orElseThrow(()-> NotFoundUserException.EXCEPTION);
+		return user;
 	}
 }

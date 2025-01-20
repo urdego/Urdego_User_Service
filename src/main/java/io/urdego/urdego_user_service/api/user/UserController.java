@@ -91,7 +91,7 @@ public class UserController {
 	@ApiResponse(responseCode = "200", description = "응답 예시 : changedNickname111")
 	public ResponseEntity<String> changeNickname(@PathVariable("userId") Long userId,
 												 @RequestBody ChangeNicknameRequest changeNicknameRequest){
-		userService.updateNickname(userId,changeNicknameRequest);
-		return ResponseEntity.ok(changeNicknameRequest.newNickname());
+		UserResponse response = userService.updateNickname(userId,changeNicknameRequest);
+		return ResponseEntity.ok(response.nickname());
 	}
 }

@@ -17,7 +17,7 @@ public interface UserService {
 	NicknameVerficationResult verifyNickname (String nickname);
 
 	//update Nickname
-	User updateNickname(Long userId, ChangeNicknameRequest changeNicknameRequest);
+	UserResponse updateNickname(Long userId, ChangeNicknameRequest changeNicknameRequest);
 
 	//delete
 	void deleteUser(Long id, String drawalRequest);
