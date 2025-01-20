@@ -5,19 +5,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.urdego.urdego_user_service.api.user.dto.request.ChangeNicknameRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.DrawalRequest;
-import io.urdego.urdego_user_service.api.user.dto.request.TokenRefreshRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
 //import io.urdego.urdego_user_service.auth.jwt.JwtService;
-import io.urdego.urdego_user_service.auth.jwt.TokenRes;
-import io.urdego.urdego_user_service.common.enums.NicknameVerificationResult;
-import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.domain.service.UserService;
-import io.urdego.urdego_user_service.domain.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -81,22 +74,13 @@ public class UserController {
 	}
 
 
-	//닉네임 중복 확인
-	@PostMapping("/users/nickname")
-	@ApiResponse(responseCode = "200", description = " 응답 예시 : PERMIN / DUPlICATED")
-	@Operation(summary = "닉네임 중복확인")
-	public ResponseEntity<String> verifyNickname(@RequestParam("nickname") String nickname) {
-		NicknameVerificationResult result = userService.verifyNickname(nickname);
-		return ResponseEntity.ok(result.getStatus());
-	}
-
 	//닉네임 변경
 	@PostMapping("users/nickname/{userId}")
 	@ApiResponse(responseCode = "200", description = "응답 예시 : changedNickname111")
 	@Operation(summary = "닉네임 변경", description = "중복확인이 된 닉네임으로 변경")
 	public ResponseEntity<String> changeNickname(@PathVariable("userId") Long userId,
-												 @RequestBody ChangeNicknameRequest changeNicknameRequest){
-		UserResponse response = userService.updateNickname(userId,changeNicknameRequest);
+												 @RequestParam String newNickname) {
+		UserResponse response = userService.updateNickname(userId,newNickname);
 		return ResponseEntity.ok(response.nickname());
 	}
 }

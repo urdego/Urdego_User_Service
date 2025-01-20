@@ -1,12 +1,11 @@
 package io.urdego.urdego_user_service.domain.service;
 
-import io.urdego.urdego_user_service.api.user.dto.request.ChangeNicknameRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
 import io.urdego.urdego_user_service.common.enums.NicknameVerificationResult;
 import io.urdego.urdego_user_service.common.enums.PlatformType;
 import io.urdego.urdego_user_service.common.enums.Role;
-import io.urdego.urdego_user_service.common.exception.user.InappropriateNicknameUserException;
+import io.urdego.urdego_user_service.common.exception.user.DuplicatedNicknameUserException;
 import io.urdego.urdego_user_service.common.exception.user.NotFoundUserException;
 import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
@@ -44,14 +43,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public NicknameVerificationResult verifyNickname(String nickname) {
-		if(userRepository.existsByNickname(nickname)) {
-			return NicknameVerificationResult.DUPLICATE;
-		}
-		return NicknameVerificationResult.PERMIT;
-	}
-
-	@Override
 	public void deleteUser(Long userId, String drawalRequest) {
 		User user = readByUserId(userId);
 		user.setRoleAndDrwalReason(drawalRequest);
@@ -59,19 +50,22 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserResponse updateNickname(Long userId, ChangeNicknameRequest changeNicknameRequest) {
+	public UserResponse updateNickname(Long userId, String newNickname) {
 		User user = readByUserId(userId);
-		if(!changeNicknameRequest.verificationResult().equals("PERMIT")) {
-			throw InappropriateNicknameUserException.EXCEPTION;
+		if(userRepository.existsByNickname(newNickname)){
+			throw DuplicatedNicknameUserException.EXCEPTION;
 		}
-		user.updateNickname(changeNicknameRequest.newNickname());
+		user.updateNickname(newNickname);
 		UserResponse response = UserResponse.from(userRepository.save(user));
 		return response;
 	}
 
 	// 공통
+	// userId 검증
 	private User readByUserId(Long userId) {
 		User user = userRepository.findById(userId).orElseThrow(()-> NotFoundUserException.EXCEPTION);
 		return user;
 	}
+
+
 }

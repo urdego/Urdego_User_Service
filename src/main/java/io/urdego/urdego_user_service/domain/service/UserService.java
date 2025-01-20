@@ -1,9 +1,7 @@
 package io.urdego.urdego_user_service.domain.service;
 
-import io.urdego.urdego_user_service.api.user.dto.request.ChangeNicknameRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
-import io.urdego.urdego_user_service.common.enums.NicknameVerificationResult;
 
 public interface UserService {
 	//create
@@ -12,11 +10,8 @@ public interface UserService {
 	//read
 	UserResponse findByUserId(Long userId);
 
-	//Validate Nickname
-	NicknameVerificationResult verifyNickname (String nickname);
-
 	//update Nickname
-	UserResponse updateNickname(Long userId, ChangeNicknameRequest changeNicknameRequest);
+	UserResponse updateNickname(Long userId, String newNickname);
 
 	//delete
 	void deleteUser(Long id, String drawalRequest);
