@@ -52,7 +52,7 @@ public class User extends BaseTimeEntity{
 	private String profileImageUrl;
 
 	// 유저 캐릭터
-	@Column(name ="user_character")
+	@Column(name ="character_type")
 	@Enumerated(EnumType.STRING)
 	private CharacterType characterType;
 
