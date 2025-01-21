@@ -5,8 +5,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.urdego.urdego_user_service.api.user.dto.request.ChangeCharacterRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.DrawalRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
+import io.urdego.urdego_user_service.api.user.dto.response.ChangeCharacterResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
 //import io.urdego.urdego_user_service.auth.jwt.JwtService;
 import io.urdego.urdego_user_service.domain.service.UserService;
@@ -70,7 +72,7 @@ public class UserController {
 	@PostMapping("/users/save")
 	@ApiResponse(responseCode = "200", description = "user 가입성공", content = @Content(schema = @Schema(implementation = UserResponse.class)))
 	public ResponseEntity<UserResponse> saveUser(@RequestBody UserSignUpRequest userSignUpRequest) {
-		return ResponseEntity.ok(userService.signUp(userSignUpRequest));
+		return ResponseEntity.ok(userService.saveUser(userSignUpRequest));
 	}
 
 
@@ -82,5 +84,15 @@ public class UserController {
 												 @RequestParam String newNickname) {
 		UserResponse response = userService.updateNickname(userId,newNickname);
 		return ResponseEntity.ok(response.nickname());
+	}
+
+	//캐릭터 변경
+	@PostMapping("users/character/{userId}")
+	@ApiResponse(responseCode = "캐릭터 변경", description = "응답 예시 : userId, FIRST")
+	@Operation(summary = "캐릭터 변경", description = "캐릭터 변경 사항 저장")
+	public ResponseEntity<ChangeCharacterResponse> changeCharacter(@PathVariable("userId") Long userId,
+																   @RequestBody ChangeCharacterRequest changeCharacterRequest) {
+		ChangeCharacterResponse response = userService.updateCharacter(userId, changeCharacterRequest);
+		return ResponseEntity.ok(response);
 	}
 }

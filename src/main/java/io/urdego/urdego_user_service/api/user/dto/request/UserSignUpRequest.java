@@ -6,10 +6,7 @@ public record UserSignUpRequest(
 		String nickname,
 		String email,
 		String platformType,
-		String platformId,
-		//String profileImageUrl
-		String accessToken,
-		String refreshToken
+		String platformId
 ) {
 
 }

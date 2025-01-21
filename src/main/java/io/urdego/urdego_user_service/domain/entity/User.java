@@ -1,10 +1,11 @@
 package io.urdego.urdego_user_service.domain.entity;
 
+import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
+import io.urdego.urdego_user_service.common.enums.CharacterType;
 import io.urdego.urdego_user_service.common.enums.PlatformType;
 import io.urdego.urdego_user_service.common.enums.Role;
 import io.urdego.urdego_user_service.api.apple.dto.AppleUserInfoDto;
 import io.urdego.urdego_user_service.api.kakao.dto.KakaoUserInfoDto;
-import io.urdego.urdego_user_service.common.enums.UserCharacter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -52,7 +53,8 @@ public class User extends BaseTimeEntity{
 
 	// 유저 캐릭터
 	@Column(name ="user_character")
-	private UserCharacter userCharacter;
+	@Enumerated(EnumType.STRING)
+	private CharacterType characterType;
 
 	//푸시알림 수신 여부
 	@Column(name = "push_alarm")
@@ -63,6 +65,18 @@ public class User extends BaseTimeEntity{
 
 	//탈퇴 이유
 	private String withDrawalReason;
+
+	public static User create(UserSignUpRequest signUpRequest) {
+		return User.builder()
+				.nickname(signUpRequest.nickname())
+				.email(signUpRequest.email())
+				.platformId(signUpRequest.platformId())
+				.platformType(
+						PlatformType.valueOf(signUpRequest.platformType().toUpperCase()))
+				.role(Role.USER)
+				.characterType(CharacterType.DEFAULT)
+				.build();
+	}
 
 	public static User createAppleUser(AppleUserInfoDto userInfo) {
 		return User.builder()
@@ -93,6 +107,10 @@ public class User extends BaseTimeEntity{
 
 	public void updateNickname(String nickname) {
 		this.nickname = nickname;
+	}
+
+	public void ChangeCharacterType(CharacterType characterType) {
+		this.characterType = characterType;
 	}
 
 }
