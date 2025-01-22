@@ -1,5 +1,6 @@
 package io.urdego.urdego_user_service.api.user.dto.response;
 
+import io.urdego.urdego_user_service.common.enums.CharacterType;
 import io.urdego.urdego_user_service.common.enums.PlatformType;
 import io.urdego.urdego_user_service.common.enums.Role;
 import io.urdego.urdego_user_service.domain.entity.User;
@@ -11,10 +12,10 @@ public record UserResponse(
 		String nickname,
 		String platformId,
 		PlatformType platformType,
-		String profileImageUrl,
+		CharacterType characterType,
 		Role role
 ) {
 	public static UserResponse from(User user) {
-		return new UserResponse(user.getId(), user.getEmail(), user.getNickname(), user.getPlatformId(), user.getPlatformType(), user.getProfileImageUrl(), user.getRole());
+		return new UserResponse(user.getId(), user.getEmail(), user.getNickname(), user.getPlatformId(), user.getPlatformType(), user.getCharacterType(), user.getRole());
 	}
 }
