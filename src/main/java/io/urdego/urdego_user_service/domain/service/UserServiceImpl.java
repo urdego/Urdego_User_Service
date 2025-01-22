@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserResponse saveUser(UserSignUpRequest userSignUpRequest) {
-		PlatformType platformType = PlatformType.valueOf(userSignUpRequest.platformId());
+		PlatformType platformType = PlatformType.valueOf(userSignUpRequest.platformType());
 		if(checkLoginUser(userSignUpRequest.platformId(), platformType)){
 			return UserResponse.from(userRepository.findByPlatformIdAndPlatformType(userSignUpRequest.platformId(),platformType)
 					.orElseThrow(()-> NotFoundUserException.EXCEPTION));
