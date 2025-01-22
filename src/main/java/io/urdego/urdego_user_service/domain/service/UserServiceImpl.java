@@ -27,6 +27,11 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserResponse saveUser(UserSignUpRequest userSignUpRequest) {
+		PlatformType platformType = PlatformType.valueOf(userSignUpRequest.platformId());
+		if(checkLoginUser(userSignUpRequest.platformId(), platformType)){
+			return UserResponse.from(userRepository.findByPlatformIdAndPlatformType(userSignUpRequest.platformId(),platformType)
+					.orElseThrow(()-> NotFoundUserException.EXCEPTION));
+		}
 		User user = userRepository.save(User.create(userSignUpRequest));
 		return UserResponse.from(user);
 	}
@@ -75,6 +80,15 @@ public class UserServiceImpl implements UserService {
 	private User readByUserId(Long userId) {
 		User user = userRepository.findById(userId).orElseThrow(()-> NotFoundUserException.EXCEPTION);
 		return user;
+	}
+
+	//로그인 시 platformId && platformType이 이미 DB에 있는지 검증
+	// DB에 이미 동일한 플랫폼 아이디가 있다면 True
+	private boolean checkLoginUser(String platformId, PlatformType platformType) {
+		if(userRepository.existsByPlatformIdAndPlatformType(platformId, platformType)){
+			return true;
+		}
+		return false;
 	}
 
 
