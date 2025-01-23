@@ -103,6 +103,7 @@ public class User extends BaseTimeEntity{
 	public void setRoleAndDrawalReason(String withDrawalReason) {
 		this.isDeleted = true;
 		this.withDrawalReason = withDrawalReason;
+		this.platformId = null;
 	}
 
 	public void updateNickname(String nickname) {
