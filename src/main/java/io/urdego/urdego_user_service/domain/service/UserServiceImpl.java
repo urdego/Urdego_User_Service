@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void deleteUser(Long userId, String drawalRequest) {
 		User user = readByUserId(userId);
-		user.setRoleAndDrwalReason(drawalRequest);
+		user.setRoleAndDrawalReason(drawalRequest);
 		userRepository.save(user);
 	}
 

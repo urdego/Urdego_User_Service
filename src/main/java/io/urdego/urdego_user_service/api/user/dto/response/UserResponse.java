@@ -16,6 +16,12 @@ public record UserResponse(
 		Role role
 ) {
 	public static UserResponse from(User user) {
-		return new UserResponse(user.getId(), user.getEmail(), user.getNickname(), user.getPlatformId(), user.getPlatformType(), user.getCharacterType(), user.getRole());
+		return new UserResponse(user.getId(),
+				user.getEmail(),
+				user.getNickname(),
+				user.getPlatformId(),
+				user.getPlatformType(),
+				user.getCharacterType(),
+				user.getRole());
 	}
 }

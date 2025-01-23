@@ -100,7 +100,7 @@ public class User extends BaseTimeEntity{
 				.build();
 	}
 
-	public void setRoleAndDrwalReason(String withDrawalReason) {
+	public void setRoleAndDrawalReason(String withDrawalReason) {
 		this.isDeleted = true;
 		this.withDrawalReason = withDrawalReason;
 	}

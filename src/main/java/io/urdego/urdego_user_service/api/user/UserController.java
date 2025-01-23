@@ -63,7 +63,7 @@ public class UserController {
 	@Operation(summary = "회원 탈퇴 DB삭제", description = "userId로 회원정보 softDelete")
 	public ResponseEntity<Void> deleteUser(@PathVariable Long userId,
 										   @RequestBody DrawalRequest drawalRequest) {
-		userService.deleteUser(userId, drawalRequest.withDrwalReason());
+		userService.deleteUser(userId, drawalRequest.withDrawalReason());
 		return ResponseEntity.ok().build();
 	}
 
