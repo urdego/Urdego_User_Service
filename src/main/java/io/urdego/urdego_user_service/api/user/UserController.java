@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.urdego.urdego_user_service.api.user.dto.request.ChangeCharacterRequest;
+import io.urdego.urdego_user_service.api.user.dto.request.ChangeNicknameRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.DrawalRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
 import io.urdego.urdego_user_service.api.user.dto.response.ChangeCharacterResponse;
@@ -81,8 +82,8 @@ public class UserController {
 	@ApiResponse(responseCode = "200", description = "응답 예시 : changedNickname111")
 	@Operation(summary = "닉네임 변경", description = "중복확인이 된 닉네임으로 변경")
 	public ResponseEntity<String> changeNickname(@PathVariable("userId") Long userId,
-												 @RequestParam String newNickname) {
-		UserResponse response = userService.updateNickname(userId,newNickname);
+												 @RequestBody ChangeNicknameRequest request) {
+		UserResponse response = userService.updateNickname(userId, request.newNickname());
 		return ResponseEntity.ok(response.nickname());
 	}
 

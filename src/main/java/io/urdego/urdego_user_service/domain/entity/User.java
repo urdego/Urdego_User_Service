@@ -74,7 +74,7 @@ public class User extends BaseTimeEntity{
 				.platformType(
 						PlatformType.valueOf(signUpRequest.platformType().toUpperCase()))
 				.role(Role.USER)
-				.characterType(CharacterType.DEFAULT)
+				.characterType(CharacterType.BASIC)
 				.build();
 	}
 
