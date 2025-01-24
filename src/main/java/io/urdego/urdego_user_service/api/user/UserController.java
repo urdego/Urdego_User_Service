@@ -96,4 +96,5 @@ public class UserController {
 		ChangeCharacterResponse response = userService.updateCharacter(userId, changeCharacterRequest);
 		return ResponseEntity.ok(response);
 	}
+
 }

@@ -28,12 +28,26 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserResponse saveUser(UserSignUpRequest userSignUpRequest) {
 		PlatformType platformType = PlatformType.valueOf(userSignUpRequest.platformType());
-		if(checkLoginUser(userSignUpRequest.platformId(), platformType)){
-			return UserResponse.from(userRepository.findByPlatformIdAndPlatformType(userSignUpRequest.platformId(),platformType)
-					.orElseThrow(()-> NotFoundUserException.EXCEPTION));
+		if(checkLoginUser(userSignUpRequest.email())){
+			User existingUser = userRepository.findByEmail(userSignUpRequest.email()).orElseThrow(()-> NotFoundUserException.EXCEPTION);
+
+			//삭제된 회원일 경우
+			// TODO Query DSL?
+			if(existingUser.getIsDeleted().equals(Boolean.TRUE)){
+				existingUser.rejoin(userSignUpRequest.platformId());
+				existingUser.initExp();
+				userRepository.save(existingUser);
+				return UserResponse.from(existingUser);
+			}
+			// 회원가입 하지 않고 로그인일 경우
+			if(existingUser.getPlatformId().equals(userSignUpRequest.platformId()) && existingUser.getPlatformType().equals(platformType)){
+				return UserResponse.from(existingUser);
+			}
+
 		}
-		User user = userRepository.save(User.create(userSignUpRequest));
-		return UserResponse.from(user);
+		// 회원가입
+		User newUser = userRepository.save(User.create(userSignUpRequest));
+		return UserResponse.from(newUser);
 	}
 
 	@Override
@@ -52,7 +66,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserResponse updateNickname(Long userId, String newNickname) {
 		User user = readByUserId(userId);
-		if(userRepository.existsByNickname(newNickname)){
+		if(userRepository.existsByNicknameAndIsDeletedFalse(newNickname)){
 			throw DuplicatedNicknameUserException.EXCEPTION;
 		}
 		user.updateNickname(newNickname);
@@ -64,6 +78,7 @@ public class UserServiceImpl implements UserService {
 	public ChangeCharacterResponse updateCharacter(Long userId, ChangeCharacterRequest changeCharacterRequest) {
 		CharacterType newCharacterType = CharacterType.valueOf(changeCharacterRequest.characterName());
 		User user = readByUserId(userId);
+
 		//TODO 잘못된 값이 들어오면 어쩌지? 그것도 해야되나?
 
 		if(user.getCharacterType().equals(newCharacterType)){
@@ -78,14 +93,12 @@ public class UserServiceImpl implements UserService {
 	// 공통
 	// userId 검증
 	private User readByUserId(Long userId) {
-		User user = userRepository.findById(userId).orElseThrow(()-> NotFoundUserException.EXCEPTION);
+		User user = userRepository.findByIdAndIsDeletedFalse(userId).orElseThrow(()-> NotFoundUserException.EXCEPTION);
 		return user;
 	}
 
-	//로그인 시 platformId && platformType이 이미 DB에 있는지 검증
-	// DB에 이미 동일한 플랫폼 아이디가 있다면 True
-	private boolean checkLoginUser(String platformId, PlatformType platformType) {
-		if(userRepository.existsByPlatformIdAndPlatformType(platformId, platformType)){
+	private boolean checkLoginUser(String email) {
+		if(userRepository.existsByEmail(email)){
 			return true;
 		}
 		return false;

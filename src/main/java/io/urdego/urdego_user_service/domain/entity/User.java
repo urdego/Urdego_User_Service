@@ -23,7 +23,6 @@ import org.hibernate.annotations.SQLRestriction;
 @Getter
 @Builder
 @AllArgsConstructor
-@SQLRestriction("is_deleted IS NULL")
 @SQLDelete(sql = "UPDATE users SET is_deleted = TRUE WHERE id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity{
@@ -63,6 +62,10 @@ public class User extends BaseTimeEntity{
 	@Column(name = "is_deleted")
 	private Boolean isDeleted;
 
+	//경험치
+	@Column(name = "experience_point")
+	private Long exp;
+
 	//탈퇴 이유
 	private String withDrawalReason;
 
@@ -74,6 +77,8 @@ public class User extends BaseTimeEntity{
 				.platformType(
 						PlatformType.valueOf(signUpRequest.platformType().toUpperCase()))
 				.role(Role.USER)
+				.isDeleted(false)
+				.exp(0L)
 				.characterType(CharacterType.BASIC)
 				.build();
 	}
@@ -106,12 +111,26 @@ public class User extends BaseTimeEntity{
 		this.platformId = null;
 	}
 
+	public void rejoin(String platformId){
+		this.isDeleted = false;
+		this.withDrawalReason = null;
+		this.platformId = platformId;
+	}
+
 	public void updateNickname(String nickname) {
 		this.nickname = nickname;
 	}
 
 	public void ChangeCharacterType(CharacterType characterType) {
 		this.characterType = characterType;
+	}
+
+	public Long addExp(Long exp) {
+		this.exp += exp;
+		return exp;
+	}
+	public void initExp() {
+		this.exp = 0L;
 	}
 
 }

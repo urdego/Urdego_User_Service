@@ -13,6 +13,7 @@ public record UserResponse(
 		String platformId,
 		PlatformType platformType,
 		CharacterType characterType,
+		Long exp,
 		Role role
 ) {
 	public static UserResponse from(User user) {
@@ -22,6 +23,7 @@ public record UserResponse(
 				user.getPlatformId(),
 				user.getPlatformType(),
 				user.getCharacterType(),
+				user.getExp(),
 				user.getRole());
 	}
 }
