@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
 	public UserResponse saveUser(UserSignUpRequest userSignUpRequest) {
 		PlatformType platformType = PlatformType.valueOf(userSignUpRequest.platformType());
 		if(checkLoginUser(userSignUpRequest.email())){
-			User existingUser = userRepository.findByEmail(userSignUpRequest.email()).orElseThrow(()-> NotFoundUserException.EXCEPTION);
+			User existingUser = userRepository.findByEmailAndPlatformType(userSignUpRequest.email(),platformType).orElseThrow(()-> NotFoundUserException.EXCEPTION);
 
 			//삭제된 회원일 경우
 			// TODO Query DSL?

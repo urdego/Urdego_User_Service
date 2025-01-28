@@ -26,7 +26,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	boolean existsByEmail(String email);
 
-	Optional<User> findByEmail(String email);
+	Optional<User> findByEmailAndPlatformType(String email, PlatformType platformType);
 
 	// 삭제된 상태의 이메일로 유저 조회
 	@Query("SELECT u FROM User u WHERE u.isDeleted = true AND u.email = :email")
