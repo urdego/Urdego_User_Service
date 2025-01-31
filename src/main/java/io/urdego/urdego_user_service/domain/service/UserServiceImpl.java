@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserResponse saveUser(UserSignUpRequest userSignUpRequest) {
 		PlatformType platformType = PlatformType.valueOf(userSignUpRequest.platformType());
-		List<User> userList = userRepository.findByName(userSignUpRequest.name());
+		List<User> userList = userRepository.findByName(userSignUpRequest.nickname());
 		int nicknameNumber = userList.size() + 1;
 		if(checkLoginUser(userSignUpRequest.email(), userSignUpRequest.platformId())){
 			User existingUser = userRepository.findByEmailAndPlatformType(userSignUpRequest.email(),platformType).orElseThrow(()-> NotFoundUserException.EXCEPTION);

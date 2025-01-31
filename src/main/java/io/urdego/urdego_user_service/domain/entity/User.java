@@ -74,10 +74,9 @@ public class User extends BaseTimeEntity{
 	private String withDrawalReason;
 
 	public static User create(UserSignUpRequest signUpRequest, int nicknameNum) {
-
 		return User.builder()
-				.name(signUpRequest.name())
-				.nickname(signUpRequest.name() +"#"+nicknameNum)
+				.name(signUpRequest.nickname())
+				.nickname(signUpRequest.nickname() +"#"+nicknameNum)
 				.email(signUpRequest.email())
 				.platformId(signUpRequest.platformId())
 				.platformType(
