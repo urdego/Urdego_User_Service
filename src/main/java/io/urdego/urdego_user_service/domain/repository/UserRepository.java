@@ -24,12 +24,18 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	// PK로 삭제되지 않은 유저 조회
 	Optional<User> findByIdAndIsDeletedFalse(Long userId);
 
-	boolean existsByEmail(String email);
+	boolean existsByEmailAndPlatformId(String email, String platformId);
 
 	Optional<User> findByEmailAndPlatformType(String email, PlatformType platformType);
 
 	// 삭제된 상태의 이메일로 유저 조회
 	@Query("SELECT u FROM User u WHERE u.isDeleted = true AND u.email = :email")
 	Optional<User> findByEmailAndIsDeletedTrue(@Param("email") String email);
+
+	//이름으로 검색한 회원 리스트
+	List<User> findByName(String name);
+
+	//Email로 유저 검색
+
 
 }

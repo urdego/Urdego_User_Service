@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +30,9 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserResponse saveUser(UserSignUpRequest userSignUpRequest) {
 		PlatformType platformType = PlatformType.valueOf(userSignUpRequest.platformType());
-		if(checkLoginUser(userSignUpRequest.email())){
+		List<User> userList = userRepository.findByName(userSignUpRequest.name());
+		int nicknameNumber = userList.size() + 1;
+		if(checkLoginUser(userSignUpRequest.email(), userSignUpRequest.platformId())){
 			User existingUser = userRepository.findByEmailAndPlatformType(userSignUpRequest.email(),platformType).orElseThrow(()-> NotFoundUserException.EXCEPTION);
 
 			//삭제된 회원일 경우
@@ -46,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
 		}
 		// 회원가입
-		User newUser = userRepository.save(User.create(userSignUpRequest));
+		User newUser = userRepository.save(User.create(userSignUpRequest, nicknameNumber));
 		return UserResponse.from(newUser);
 	}
 
@@ -97,8 +101,8 @@ public class UserServiceImpl implements UserService {
 		return user;
 	}
 
-	private boolean checkLoginUser(String email) {
-		if(userRepository.existsByEmail(email)){
+	private boolean checkLoginUser(String email, String platformId) {
+		if(userRepository.existsByEmailAndPlatformId(email, platformId)){
 			return true;
 		}
 		return false;

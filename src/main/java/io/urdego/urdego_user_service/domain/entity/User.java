@@ -18,6 +18,8 @@ import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -40,6 +42,8 @@ public class User extends BaseTimeEntity{
 	private PlatformType platformType;
 
 	private String email;
+
+	private String name;
 
 	private String nickname;
 
@@ -69,9 +73,11 @@ public class User extends BaseTimeEntity{
 	//탈퇴 이유
 	private String withDrawalReason;
 
-	public static User create(UserSignUpRequest signUpRequest) {
+	public static User create(UserSignUpRequest signUpRequest, int nicknameNum) {
+
 		return User.builder()
-				.nickname(signUpRequest.nickname())
+				.name(signUpRequest.name())
+				.nickname(signUpRequest.name() +"#"+nicknameNum)
 				.email(signUpRequest.email())
 				.platformId(signUpRequest.platformId())
 				.platformType(

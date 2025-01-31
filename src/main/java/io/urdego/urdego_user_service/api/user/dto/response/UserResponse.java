@@ -9,6 +9,7 @@ import lombok.Builder;
 public record UserResponse(
 		Long userId,
 		String email,
+		String name,
 		String nickname,
 		String platformId,
 		PlatformType platformType,
@@ -19,6 +20,7 @@ public record UserResponse(
 	public static UserResponse from(User user) {
 		return new UserResponse(user.getId(),
 				user.getEmail(),
+				user.getName(),
 				user.getNickname(),
 				user.getPlatformId(),
 				user.getPlatformType(),
