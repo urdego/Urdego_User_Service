@@ -1,24 +1,14 @@
 package io.urdego.urdego_user_service.domain.entity;
 
+import io.urdego.urdego_user_service.api.apple.dto.AppleUserInfoDto;
+import io.urdego.urdego_user_service.api.kakao.dto.KakaoUserInfoDto;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
 import io.urdego.urdego_user_service.common.enums.CharacterType;
 import io.urdego.urdego_user_service.common.enums.PlatformType;
 import io.urdego.urdego_user_service.common.enums.Role;
-import io.urdego.urdego_user_service.api.apple.dto.AppleUserInfoDto;
-import io.urdego.urdego_user_service.api.kakao.dto.KakaoUserInfoDto;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-
-import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -72,6 +62,8 @@ public class User extends BaseTimeEntity{
 
 	//탈퇴 이유
 	private String withDrawalReason;
+
+
 
 	public static User create(UserSignUpRequest signUpRequest, int nicknameNum) {
 		return User.builder()

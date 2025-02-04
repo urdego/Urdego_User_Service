@@ -24,7 +24,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	// PK로 삭제되지 않은 유저 조회
 	Optional<User> findByIdAndIsDeletedFalse(Long userId);
 
-	boolean existsByEmailAndPlatformId(String email, String platformId);
+	boolean existsByEmailAndPlatformType(String email, PlatformType platformType);
+
+	Optional<User> findByEmailAndPlatformId(String email, String platformId);
 
 	Optional<User> findByEmailAndPlatformType(String email, PlatformType platformType);
 
