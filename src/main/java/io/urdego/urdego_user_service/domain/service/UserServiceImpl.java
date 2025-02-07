@@ -9,9 +9,11 @@ import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
 import io.urdego.urdego_user_service.common.enums.PlatformType;
 import io.urdego.urdego_user_service.common.exception.character.InvalidCharacterException;
 import io.urdego.urdego_user_service.common.exception.user.DuplicatedNicknameUserException;
+import io.urdego.urdego_user_service.common.exception.user.InvalidActiveCharacterException;
 import io.urdego.urdego_user_service.common.exception.user.NotFoundUserException;
 import io.urdego.urdego_user_service.common.exception.user.ReLoginFailException;
 import io.urdego.urdego_user_service.common.exception.userCharacter.DuplicatedCharacterUserException;
+import io.urdego.urdego_user_service.common.exception.userCharacter.NotFoundCharacterException;
 import io.urdego.urdego_user_service.domain.entity.GameCharacter;
 import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.domain.entity.UserCharacter;
@@ -23,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -86,8 +89,26 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public ChangeCharacterResponse updateCharacter(Long userId, ChangeCharacterRequest changeCharacterRequest) {
-		return null;
+	public UserCharacterResponse updateActiveCharacter(Long userId, ChangeCharacterRequest request) {
+		User user = readByUserId(userId);
+		GameCharacter changeCharacter = gameCharacterRepository.findByName(request.characterName())
+				.orElseThrow(()-> InvalidCharacterException.EXCEPTION);
+		// 바꾸고자 하는 캐릭터가 보유한 캐릭터에 있는지? 없으면 에러!!
+		for(int i = 0; i < user.getOwnedCharacters().size(); i++){
+			if(!user.getOwnedCharacters().get(1).getCharacter().getName().equals(request.characterName())){
+				throw NotFoundCharacterException.EXCEPTION;
+			}
+		}
+
+		// 현재 사용 중인 캐릭터와 동일하지 않은지?
+		if(user.getActiveCharacter().equals(changeCharacter)){
+			throw InvalidActiveCharacterException.EXCEPTION;
+		}
+
+		//저장
+		user.changeActiveCharacter(changeCharacter);
+		userRepository.save(user);
+		return UserCharacterResponse.from(user);
 	}
 
 	@Override
@@ -98,16 +119,15 @@ public class UserServiceImpl implements UserService {
 
 		log.info("characterId : {}",addGameCharacter.getId());
 
-		if(userCharacterRepository.existsByUserAndCharacter(user,addGameCharacter)){
+		if(userCharacterRepository.existsByUserAndCharacter(user, addGameCharacter)){
 			throw DuplicatedCharacterUserException.EXCEPTION;
 		}
 
 		UserCharacter userCharacter = new UserCharacter(user, addGameCharacter);
 		user.addCharacter(userCharacter);
-		userCharacterRepository.save(userCharacter);
+		userRepository.save(user);
 
-		UserCharacterResponse response = UserCharacterResponse.from(user);
-		return response;
+		return UserCharacterResponse.from(user);
 	}
 
 	// 공통 component

@@ -5,19 +5,16 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.urdego.urdego_user_service.api.user.dto.request.*;
-import io.urdego.urdego_user_service.api.user.dto.response.ChangeCharacterResponse;
+import io.urdego.urdego_user_service.api.user.dto.request.ChangeCharacterRequest;
+import io.urdego.urdego_user_service.api.user.dto.request.ChangeNicknameRequest;
+import io.urdego.urdego_user_service.api.user.dto.request.DrawalRequest;
+import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
 import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
-//import io.urdego.urdego_user_service.auth.jwt.JwtService;
-import io.urdego.urdego_user_service.domain.entity.UserCharacter;
 import io.urdego.urdego_user_service.domain.service.UserService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -93,9 +90,9 @@ public class UserController {
 	@PostMapping("users/character/change/{userId}")
 	@ApiResponse(responseCode = "캐릭터 변경", description = "응답 예시 : userId, FIRST")
 	@Operation(summary = "캐릭터 변경", description = "캐릭터 변경 사항 저장")
-	public ResponseEntity<ChangeCharacterResponse> changeCharacter(@PathVariable("userId") Long userId,
+	public ResponseEntity<UserCharacterResponse> changeCharacter(@PathVariable("userId") Long userId,
 																   @RequestBody ChangeCharacterRequest changeCharacterRequest) {
-		ChangeCharacterResponse response = userService.updateCharacter(userId, changeCharacterRequest);
+		UserCharacterResponse response = userService.updateActiveCharacter(userId, changeCharacterRequest);
 		return ResponseEntity.ok(response);
 	}
 
