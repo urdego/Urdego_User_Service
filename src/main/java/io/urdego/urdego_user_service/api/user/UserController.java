@@ -5,17 +5,19 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.urdego.urdego_user_service.api.user.dto.request.ChangeCharacterRequest;
-import io.urdego.urdego_user_service.api.user.dto.request.ChangeNicknameRequest;
-import io.urdego.urdego_user_service.api.user.dto.request.DrawalRequest;
-import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
+import io.urdego.urdego_user_service.api.user.dto.request.*;
 import io.urdego.urdego_user_service.api.user.dto.response.ChangeCharacterResponse;
+import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
 //import io.urdego.urdego_user_service.auth.jwt.JwtService;
+import io.urdego.urdego_user_service.domain.entity.UserCharacter;
 import io.urdego.urdego_user_service.domain.service.UserService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -88,7 +90,7 @@ public class UserController {
 	}
 
 	//캐릭터 변경
-	@PostMapping("users/character/{userId}")
+	@PostMapping("users/character/change/{userId}")
 	@ApiResponse(responseCode = "캐릭터 변경", description = "응답 예시 : userId, FIRST")
 	@Operation(summary = "캐릭터 변경", description = "캐릭터 변경 사항 저장")
 	public ResponseEntity<ChangeCharacterResponse> changeCharacter(@PathVariable("userId") Long userId,
@@ -97,4 +99,17 @@ public class UserController {
 		return ResponseEntity.ok(response);
 	}
 
+	/*//유저가 가지고 있는 캐릭터 조회
+	@GetMapping("users/character/{userId}")
+	public ResponseEntity<List<UserCharacter>> getCharacters(@PathVariable("userId") Long userId) {
+
+	}*/
+
+	//캐릭터 획득 (유저에게)
+	@PostMapping("users/character/add/{userId}")
+	public ResponseEntity<UserCharacterResponse> addCharacter(@PathVariable("userId") Long userId,
+															  @RequestBody ChangeCharacterRequest reqeust){
+		UserCharacterResponse response = userService.addCharacter(userId, reqeust);
+		return ResponseEntity.ok(response);
+	}
 }

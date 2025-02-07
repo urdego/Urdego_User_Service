@@ -7,13 +7,19 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ExceptionMessage {
-    REFRESH_TOKEN_NOT_FOUND("Refresh Token이 존재하지 않거나 만료되었습니다.", HttpStatus.NOT_FOUND, "Refresh Token Not Found"),
-    INVALID_REFRESH_TOKEN("유효하지 않은 Refresh Token 입니다.", HttpStatus.UNAUTHORIZED, "Invalid Refresh Token"),
+    //common
+    ReLogin_Fail("재 로그인 실패.",HttpStatus.INTERNAL_SERVER_ERROR, "ReLogin Fail."),
+    //user
     NOT_FOUND_USER("유효하지 않은 UserId 입니다.", HttpStatus.NOT_FOUND,"not found UserId."),
     INVALID_NICKNAME("부적절한 닉네임 입니다.", HttpStatus.BAD_REQUEST, " Nickname contains inappropriate words."),
     DUPLICATED_NICKNAME("이미 사용중인 닉네임 입니다.", HttpStatus.CONFLICT, "This nickname already use."),
-    DUPLICATED_CHARACTER_TYPE("이미 사용중인 케릭터 입니다.", HttpStatus.CONFLICT, "This character already use.");
 
+    //userCharacter,
+    DUPLICATED_CHARACTER("이미 보유중인 케릭터 입니다.", HttpStatus.CONFLICT, "This character already use."),
+    NOT_FOUND_CHARACTER("보유하지 않은 캐릭터 입니다.", HttpStatus.BAD_REQUEST, "this character does not yours."),
+
+    //character
+    INVALID_CHARACTER("찾을 수 없는 캐릭터 입니다.", HttpStatus.BAD_REQUEST, "character does not exist.");
 
     private final String text;
     private final HttpStatus status;
