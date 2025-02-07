@@ -1,17 +1,22 @@
 package io.urdego.urdego_user_service.domain.service;
 
+import feign.FeignException;
 import io.urdego.urdego_user_service.api.user.dto.request.ChangeCharacterRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
 import io.urdego.urdego_user_service.api.user.dto.response.ChangeCharacterResponse;
+import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
-import io.urdego.urdego_user_service.common.enums.CharacterType;
-import io.urdego.urdego_user_service.common.enums.NicknameVerificationResult;
 import io.urdego.urdego_user_service.common.enums.PlatformType;
-import io.urdego.urdego_user_service.common.enums.Role;
-import io.urdego.urdego_user_service.common.exception.user.DuplicatedCharacterUserException;
+import io.urdego.urdego_user_service.common.exception.character.InvalidCharacterException;
 import io.urdego.urdego_user_service.common.exception.user.DuplicatedNicknameUserException;
 import io.urdego.urdego_user_service.common.exception.user.NotFoundUserException;
+import io.urdego.urdego_user_service.common.exception.user.ReLoginFailException;
+import io.urdego.urdego_user_service.common.exception.userCharacter.DuplicatedCharacterUserException;
+import io.urdego.urdego_user_service.domain.entity.GameCharacter;
 import io.urdego.urdego_user_service.domain.entity.User;
+import io.urdego.urdego_user_service.domain.entity.UserCharacter;
+import io.urdego.urdego_user_service.domain.repository.GameCharacterRepository;
+import io.urdego.urdego_user_service.domain.repository.UserCharacterRepository;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +31,8 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
+	private final UserCharacterRepository userCharacterRepository;
+	private final GameCharacterRepository gameCharacterRepository;
 
 	@Override
 	public UserResponse saveUser(UserSignUpRequest userSignUpRequest) {
@@ -37,8 +44,8 @@ public class UserServiceImpl implements UserService {
 			//삭제된 회원일 경우
 			// TODO Query DSL?
 			if(existingUser.getIsDeleted().equals(Boolean.TRUE)){
-				existingUser.rejoin(userSignUpRequest.platformId());
-				existingUser.initExp();
+				existingUser.initUserInfo(userSignUpRequest.platformId());
+				initActiveCharacter(existingUser);
 				userRepository.save(existingUser);
 				return UserResponse.from(existingUser);
 			}
@@ -46,12 +53,9 @@ public class UserServiceImpl implements UserService {
 			if(existingUser.getPlatformId().equals(userSignUpRequest.platformId()) && existingUser.getPlatformType().equals(platformType)){
 				return UserResponse.from(existingUser);
 			}
-
 		}
 		// 신규 회원가입
-		List<User> userList = userRepository.findByName(userSignUpRequest.nickname());
-		int nicknameNumber = userList.size() + 1;
-		User newUser = userRepository.save(User.create(userSignUpRequest, nicknameNumber));
+		User newUser = craeteNewUser(userSignUpRequest);
 		return UserResponse.from(newUser);
 	}
 
@@ -65,6 +69,8 @@ public class UserServiceImpl implements UserService {
 	public void deleteUser(Long userId, String drawalRequest) {
 		User user = readByUserId(userId);
 		user.setRoleAndDrawalReason(drawalRequest);
+		UserCharacter userCharacter = userCharacterRepository.findByUser(user)
+				.orElseThrow(()-> NotFoundUserException.EXCEPTION);
 		userRepository.save(user);
 	}
 
@@ -81,21 +87,30 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public ChangeCharacterResponse updateCharacter(Long userId, ChangeCharacterRequest changeCharacterRequest) {
-		CharacterType newCharacterType = CharacterType.valueOf(changeCharacterRequest.characterName());
+		return null;
+	}
+
+	@Override
+	public UserCharacterResponse addCharacter(Long userId, ChangeCharacterRequest request) {
 		User user = readByUserId(userId);
+		GameCharacter addGameCharacter = gameCharacterRepository.findByName(request.characterName())
+				.orElseThrow(()-> InvalidCharacterException.EXCEPTION);
 
-		//TODO 잘못된 값이 들어오면 어쩌지? 그것도 해야되나?
+		log.info("characterId : {}",addGameCharacter.getId());
 
-		if(user.getCharacterType().equals(newCharacterType)){
+		if(userCharacterRepository.existsByUserAndCharacter(user,addGameCharacter)){
 			throw DuplicatedCharacterUserException.EXCEPTION;
 		}
-		user.ChangeCharacterType(newCharacterType);
-		userRepository.save(user);
-		ChangeCharacterResponse response = ChangeCharacterResponse.of(user.getId(), user.getCharacterType());
+
+		UserCharacter userCharacter = new UserCharacter(user, addGameCharacter);
+		user.addCharacter(userCharacter);
+		userCharacterRepository.save(userCharacter);
+
+		UserCharacterResponse response = UserCharacterResponse.from(user);
 		return response;
 	}
 
-	// 공통
+	// 공통 component
 	// userId 검증
 	private User readByUserId(Long userId) {
 		User user = userRepository.findByIdAndIsDeletedFalse(userId).orElseThrow(()-> NotFoundUserException.EXCEPTION);
@@ -107,6 +122,37 @@ public class UserServiceImpl implements UserService {
 			return true;
 		}
 		return false;
+	}
+
+	// 신규 회원가입
+	private User craeteNewUser(UserSignUpRequest userSignUpRequest) {
+		List<User> userList = userRepository.findByName(userSignUpRequest.nickname());
+		int nicknameNumber = userList.size() + 1;
+		User newUser = User.create(userSignUpRequest,nicknameNumber);
+
+		UserCharacter userCharacter = initActiveCharacter(newUser);
+
+		userRepository.save(newUser);
+		userCharacterRepository.save(userCharacter);
+
+		return newUser;
+	}
+
+	//기본 캐릭터로 초기화
+	private UserCharacter initActiveCharacter(User user){
+		GameCharacter basicCharacter = gameCharacterRepository.findById(1L).orElse(null);
+		//탈퇴 후 재 로그인 시
+		//TODO 탈퇴 후 재로그인 시 에러 발생 !!
+		//왜냐면 재 로그인 시 이미 UserCharacters 테이블에 userId가 있음
+		if(!user.getOwnedCharacters().isEmpty()){
+			UserCharacter existUser = userCharacterRepository.findByUser(user)
+					.orElseThrow(()-> ReLoginFailException.EXCEPTION);
+			return existUser;
+		}
+		UserCharacter userCharacter = new UserCharacter(user, basicCharacter);
+		user.changeActiveCharacter(basicCharacter);
+		user.getOwnedCharacters().add(userCharacter);
+		return userCharacter;
 	}
 
 

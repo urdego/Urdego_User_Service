@@ -1,14 +1,14 @@
 package io.urdego.urdego_user_service.domain.entity;
 
-import io.urdego.urdego_user_service.api.apple.dto.AppleUserInfoDto;
-import io.urdego.urdego_user_service.api.kakao.dto.KakaoUserInfoDto;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
-import io.urdego.urdego_user_service.common.enums.CharacterType;
 import io.urdego.urdego_user_service.common.enums.PlatformType;
 import io.urdego.urdego_user_service.common.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -41,20 +41,12 @@ public class User extends BaseTimeEntity{
 	@Enumerated(value = EnumType.STRING)
 	private Role role;
 
-	@Column(name = "profile_image")
-	private String profileImageUrl;
-
-	// 유저 캐릭터
-	@Column(name ="character_type")
-	@Enumerated(EnumType.STRING)
-	private CharacterType characterType;
-
 	//푸시알림 수신 여부
 	@Column(name = "push_alarm")
 	private Boolean pushAlarm;
 
-	@Column(name = "is_deleted")
-	private Boolean isDeleted;
+	@Column(name = "is_deleted", nullable = false)
+	private Boolean isDeleted = false;
 
 	//경험치
 	@Column(name = "experience_point")
@@ -63,7 +55,18 @@ public class User extends BaseTimeEntity{
 	//탈퇴 이유
 	private String withDrawalReason;
 
+	//보유 캐릭터 현황
+	@OneToMany(
+			fetch = FetchType.LAZY,
+			mappedBy = "user",
+			cascade = CascadeType.ALL
+	)
+	private List<UserCharacter> ownedCharacters = new ArrayList<>();
 
+	//현재 사용 중인 캐릭터
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "active_character_id",nullable = true)
+	private GameCharacter activeCharacter;
 
 	public static User create(UserSignUpRequest signUpRequest, int nicknameNum) {
 		return User.builder()
@@ -73,32 +76,10 @@ public class User extends BaseTimeEntity{
 				.platformId(signUpRequest.platformId())
 				.platformType(
 						PlatformType.valueOf(signUpRequest.platformType().toUpperCase()))
+				.ownedCharacters(new ArrayList<>())
 				.role(Role.USER)
 				.isDeleted(false)
 				.exp(0L)
-				.characterType(CharacterType.BASIC)
-				.build();
-	}
-
-	public static User createAppleUser(AppleUserInfoDto userInfo) {
-		return User.builder()
-				.nickname(userInfo.getNickname())
-				.email(userInfo.getEmail())
-				.platformId(userInfo.getPlatformId())
-				.platformType(userInfo.getPlatformType())
-				.role(Role.USER)
-				.profileImageUrl(null)
-				.build();
-	}
-
-	public static User createKakaoUser(KakaoUserInfoDto userInfo) {
-		return User.builder()
-				.nickname(userInfo.getKakaoAccount().getProfile().getNickname())
-				.email(userInfo.getKakaoAccount().getEmail())
-				.profileImageUrl(userInfo.getKakaoAccount().getProfile().getProfileImage())
-				.platformId(userInfo.getId().toString())
-				.platformType(userInfo.getType())
-				.role(Role.USER)
 				.build();
 	}
 
@@ -108,26 +89,29 @@ public class User extends BaseTimeEntity{
 		this.platformId = null;
 	}
 
-	public void rejoin(String platformId){
+	public void initUserInfo(String platformId){
 		this.isDeleted = false;
 		this.withDrawalReason = null;
 		this.platformId = platformId;
+		this.ownedCharacters = new ArrayList<>();
+		this.exp = 0L;
 	}
 
 	public void updateNickname(String nickname) {
 		this.nickname = nickname;
 	}
 
-	public void ChangeCharacterType(CharacterType characterType) {
-		this.characterType = characterType;
-	}
-
 	public Long addExp(Long exp) {
 		this.exp += exp;
 		return exp;
 	}
-	public void initExp() {
-		this.exp = 0L;
+
+
+	public void changeActiveCharacter(GameCharacter character) {
+		this.activeCharacter = character;
+	}
+	public void addCharacter(UserCharacter character) {
+		this.ownedCharacters.add(character);
 	}
 
 }
