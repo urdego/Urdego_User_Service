@@ -1,9 +1,7 @@
 package io.urdego.urdego_user_service.domain.service;
 
-import feign.FeignException;
 import io.urdego.urdego_user_service.api.user.dto.request.ChangeCharacterRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
-import io.urdego.urdego_user_service.api.user.dto.response.ChangeCharacterResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
 import io.urdego.urdego_user_service.common.enums.PlatformType;
@@ -25,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
@@ -45,7 +42,6 @@ public class UserServiceImpl implements UserService {
 			User existingUser = userRepository.findByEmailAndPlatformType(userSignUpRequest.email(), platformType).orElseThrow(()-> NotFoundUserException.EXCEPTION);
 
 			//삭제된 회원일 경우
-			// TODO Query DSL?
 			if(existingUser.getIsDeleted().equals(Boolean.TRUE)){
 				existingUser.initUserInfo(userSignUpRequest.platformId());
 				initActiveCharacter(existingUser);
@@ -74,6 +70,7 @@ public class UserServiceImpl implements UserService {
 		user.setRoleAndDrawalReason(drawalRequest);
 		UserCharacter userCharacter = userCharacterRepository.findByUser(user)
 				.orElseThrow(()-> NotFoundUserException.EXCEPTION);
+		userCharacterRepository.delete(userCharacter);
 		userRepository.save(user);
 	}
 
