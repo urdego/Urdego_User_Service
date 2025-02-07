@@ -20,14 +20,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	boolean existsByEmailAndPlatformType(String email, PlatformType platformType);
 
-
 	Optional<User> findByEmailAndPlatformType(String email, PlatformType platformType);
 
 	//이름으로 검색한 회원 리스트
 	List<User> findByName(String name);
 
-	//필요한 유저들 한번에 가져오기
-	//List<User> findAllById(List<Long> userIds);
 
 
 }

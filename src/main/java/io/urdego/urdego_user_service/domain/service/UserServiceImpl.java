@@ -140,7 +140,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 	// 공통 component
-	// userId 검증
 	private User readByUserId(Long userId) {
 		User user = userRepository.findByIdAndIsDeletedFalse(userId).orElseThrow(()-> NotFoundUserException.EXCEPTION);
 		return user;
@@ -171,8 +170,6 @@ public class UserServiceImpl implements UserService {
 	private UserCharacter initActiveCharacter(User user){
 		GameCharacter basicCharacter = gameCharacterRepository.findById(1L).orElse(null);
 		//탈퇴 후 재 로그인 시
-		//TODO 탈퇴 후 재로그인 시 에러 발생 !!
-		//왜냐면 재 로그인 시 이미 UserCharacters 테이블에 userId가 있음
 		if(!user.getOwnedCharacters().isEmpty()){
 			UserCharacter existUser = userCharacterRepository.findByUser(user)
 					.orElseThrow(()-> ReLoginFailException.EXCEPTION);
@@ -183,6 +180,4 @@ public class UserServiceImpl implements UserService {
 		user.getOwnedCharacters().add(userCharacter);
 		return userCharacter;
 	}
-
-
 }
