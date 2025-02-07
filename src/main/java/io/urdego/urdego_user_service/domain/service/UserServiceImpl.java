@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -62,6 +63,17 @@ public class UserServiceImpl implements UserService {
 	public UserResponse findByUserId(Long userId) {
 		User user = readByUserId(userId);
 		return UserResponse.from(user);
+	}
+
+	@Override
+	public List<UserResponse> readUserInfoList(List<Long> userIds) {
+		List<User> users = userRepository.findAllById(userIds);
+		List<UserResponse> responses = new ArrayList<>();
+		for(User user : users) {
+			UserResponse response = UserResponse.from(user);
+			responses.add(response);
+		}
+		return responses;
 	}
 
 	@Override

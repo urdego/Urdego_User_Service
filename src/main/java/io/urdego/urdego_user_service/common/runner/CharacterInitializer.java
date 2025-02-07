@@ -17,12 +17,12 @@ public class CharacterInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        List<String> characterNamse = List.of(
+        List<String> characterNames = List.of(
                 "BASIC","ANGULAR", "BUMPHY", "DOT",
                 "PLANET", "SHARP", "SQUARE", "STAR", "WOOL"
         );
 
-        for(String name : characterNamse) {
+        for(String name : characterNames) {
             if(gameCharacterRepository.findByName(name).isEmpty()) {
                 GameCharacter gameCharacter = new GameCharacter(name);
                 gameCharacterRepository.save(gameCharacter);
