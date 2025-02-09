@@ -4,6 +4,7 @@ import io.urdego.urdego_user_service.api.user.dto.request.ChangeCharacterRequest
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
 import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
+import io.urdego.urdego_user_service.api.user.dto.response.UserSimpleResponse;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface UserService {
 	//read
 	UserResponse findByUserId(Long userId);
 
-	List<UserResponse> readUserInfoList(List<Long> userIds);
+	List<UserSimpleResponse> readUserInfoList(List<Long> userIds);
 
 	//update Nickname
 	UserResponse updateNickname(Long userId, String newNickname);

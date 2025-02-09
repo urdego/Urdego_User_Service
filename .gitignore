@@ -37,5 +37,6 @@ out/
 .vscode/
 
 *.yml
+*.p8
 
 ~/static/

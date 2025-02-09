@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.urdego.urdego_user_service.api.user.dto.request.*;
 import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
+import io.urdego.urdego_user_service.api.user.dto.response.UserSimpleResponse;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
 import io.urdego.urdego_user_service.domain.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +62,7 @@ public class UserController {
 
 	//회원 정보 조회 (리스트)
 	@GetMapping("/users")
-	public ResponseEntity<List<UserResponse>> getUsers(@RequestBody UserInfoListRequest request) {
+	public ResponseEntity<List<UserSimpleResponse>> getUsers(@RequestBody UserInfoListRequest request) {
 		return ResponseEntity.ok().body(userService.readUserInfoList(request.userIds()));
 	}
 

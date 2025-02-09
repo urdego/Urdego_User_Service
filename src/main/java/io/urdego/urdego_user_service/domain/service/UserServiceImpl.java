@@ -4,6 +4,7 @@ import io.urdego.urdego_user_service.api.user.dto.request.ChangeCharacterRequest
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
 import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
+import io.urdego.urdego_user_service.api.user.dto.response.UserSimpleResponse;
 import io.urdego.urdego_user_service.common.enums.PlatformType;
 import io.urdego.urdego_user_service.common.exception.character.InvalidCharacterException;
 import io.urdego.urdego_user_service.common.exception.user.*;
@@ -63,11 +64,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<UserResponse> readUserInfoList(List<Long> userIds) {
+	public List<UserSimpleResponse> readUserInfoList(List<Long> userIds) {
 		List<User> users = userRepository.findAllById(userIds);
-		List<UserResponse> responses = new ArrayList<>();
+		List<UserSimpleResponse> responses = new ArrayList<>();
 		for(User user : users) {
-			UserResponse response = UserResponse.from(user);
+			UserSimpleResponse response = UserSimpleResponse.from(user);
 			responses.add(response);
 		}
 		return responses;
