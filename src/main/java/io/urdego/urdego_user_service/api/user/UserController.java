@@ -10,6 +10,7 @@ import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserSimpleResponse;
 import io.urdego.urdego_user_service.domain.entity.User;
+import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
 import io.urdego.urdego_user_service.domain.service.UserService;
 import lombok.RequiredArgsConstructor;
