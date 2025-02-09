@@ -91,6 +91,8 @@ public class User extends BaseTimeEntity{
 		this.isDeleted = true;
 		this.withDrawalReason = withDrawalReason;
 		this.platformId = null;
+		this.exp = 0L;
+		this.level = 1;
 	}
 
 	public void initUserInfo(String platformId){

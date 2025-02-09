@@ -14,15 +14,19 @@ import io.urdego.urdego_user_service.common.exception.userCharacter.NotFoundChar
 import io.urdego.urdego_user_service.domain.entity.GameCharacter;
 import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.domain.entity.UserCharacter;
+import io.urdego.urdego_user_service.domain.entity.UserCharacterPK;
 import io.urdego.urdego_user_service.domain.repository.GameCharacterRepository;
 import io.urdego.urdego_user_service.domain.repository.UserCharacterRepository;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -76,12 +80,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteUser(Long userId, String drawalRequest) {
 		User user = readByUserId(userId);
 		user.setRoleAndDrawalReason(drawalRequest);
-		UserCharacter userCharacter = userCharacterRepository.findByUser(user)
-				.orElseThrow(()-> NotFoundUserException.EXCEPTION);
-		userCharacterRepository.delete(userCharacter);
+		userCharacterRepository.deleteByUser(user);
 		userRepository.save(user);
 	}
 
