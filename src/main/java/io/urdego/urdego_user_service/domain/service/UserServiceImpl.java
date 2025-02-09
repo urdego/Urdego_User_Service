@@ -2,6 +2,7 @@ package io.urdego.urdego_user_service.domain.service;
 
 import io.urdego.urdego_user_service.api.user.dto.request.ChangeCharacterRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
+import io.urdego.urdego_user_service.api.user.dto.response.LevelResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserSimpleResponse;
@@ -102,20 +103,23 @@ public class UserServiceImpl implements UserService {
 				.orElseThrow(()-> InvalidCharacterException.EXCEPTION);
 		// 바꾸고자 하는 캐릭터가 보유한 캐릭터에 있는지? 없으면 에러!!
 		for(int i = 0; i < user.getOwnedCharacters().size(); i++){
-			if(!user.getOwnedCharacters().get(1).getCharacter().getName().equals(request.characterName())){
-				throw NotFoundCharacterException.EXCEPTION;
+
+			log.info("characterName : {}", request.characterName());
+			log.info("ownedCharacter : {}", user.getOwnedCharacters().get(i).getCharacter().getName());
+
+			if(user.getOwnedCharacters().get(i).getCharacter().getName().equals(request.characterName())){
+				// 현재 사용 중인 캐릭터와 동일하지 않은지?
+				if(user.getActiveCharacter().equals(changeCharacter)){
+					throw InvalidActiveCharacterException.EXCEPTION;
+				}
+
+				//저장
+				user.changeActiveCharacter(changeCharacter);
+				userRepository.save(user);
+				return UserCharacterResponse.from(user);
 			}
 		}
-
-		// 현재 사용 중인 캐릭터와 동일하지 않은지?
-		if(user.getActiveCharacter().equals(changeCharacter)){
-			throw InvalidActiveCharacterException.EXCEPTION;
-		}
-
-		//저장
-		user.changeActiveCharacter(changeCharacter);
-		userRepository.save(user);
-		return UserCharacterResponse.from(user);
+		throw NotFoundCharacterException.EXCEPTION;
 	}
 
 	@Override
@@ -149,6 +153,41 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<UserResponse> searchByWord(String word) {
 		return userRepository.findByWord(word).stream().map(UserResponse::from).toList();
+	}
+
+	@Override
+	public LevelResponse addExp(Long userId, Long exp) {
+		boolean isLevelUp = false;
+		User user = readByUserId(userId);
+		Long totalExp = user.addExp(exp);
+		log.info("totalExp : {}", totalExp);
+		int beforeLevel = user.getLevel();
+		int afterLevel = calculateLevel(totalExp);
+		log.info("before level : {} after level : {} ", beforeLevel, afterLevel);
+
+		if(beforeLevel < afterLevel){
+			UserCharacter userCharacter = levelReword(user,afterLevel);
+			user.getOwnedCharacters().add(userCharacter);
+			user.levelUp(afterLevel);
+			isLevelUp = true;
+		}
+		userRepository.save(user);
+		return LevelResponse.from(user,isLevelUp);
+	}
+
+
+	@Override
+	public UserCharacter levelReword(User user, int characterIndex) {
+		Long index = Long.valueOf(characterIndex);
+		GameCharacter addGameCharacter = gameCharacterRepository.findById(index)
+				.orElseThrow(() -> InvalidCharacterException.EXCEPTION);
+
+		if (userCharacterRepository.existsByUserAndCharacter(user, addGameCharacter)) {
+			throw DuplicatedCharacterUserException.EXCEPTION;
+		}
+
+		UserCharacter userCharacter = new UserCharacter(user, addGameCharacter);
+		return userCharacter;
 	}
 
 	// 공통 component
@@ -191,5 +230,30 @@ public class UserServiceImpl implements UserService {
 		user.changeActiveCharacter(basicCharacter);
 		user.getOwnedCharacters().add(userCharacter);
 		return userCharacter;
+	}
+
+	//레벨 계산
+	private int calculateLevel(Long totalExp){
+		if (totalExp >= 2500) {
+			return 9;
+		} else if (totalExp >= 2000) {
+			return 8;
+		} else if (totalExp >= 1600) {
+			return 7;
+		} else if (totalExp >= 1200) {
+			return 6;
+		} else if (totalExp >= 900) {
+			return 5;
+		} else if (totalExp >= 600) {
+			return 4;
+		} else if (totalExp >= 400) {
+			return 3;
+		} else if (totalExp >= 200) {
+			return 2;
+		}
+		else {
+			// 100 미만의 exp는 아직 레벨업이 되지 않은 것으로 처리
+			return 1;
+		}
 	}
 }

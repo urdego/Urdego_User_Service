@@ -52,8 +52,11 @@ public class User extends BaseTimeEntity{
 	@Column(name = "experience_point")
 	private Long exp;
 
+	private int level;
+
 	//탈퇴 이유
 	private String withDrawalReason;
+
 
 	//보유 캐릭터 현황
 	@OneToMany(
@@ -80,6 +83,7 @@ public class User extends BaseTimeEntity{
 				.role(Role.USER)
 				.isDeleted(false)
 				.exp(0L)
+				.level(1)
 				.build();
 	}
 
@@ -103,7 +107,7 @@ public class User extends BaseTimeEntity{
 
 	public Long addExp(Long exp) {
 		this.exp += exp;
-		return exp;
+		return this.exp;
 	}
 
 
@@ -112,6 +116,10 @@ public class User extends BaseTimeEntity{
 	}
 	public void addCharacter(UserCharacter character) {
 		this.ownedCharacters.add(character);
+	}
+
+	public void levelUp(int level) {
+		this.level = level;
 	}
 
 }
