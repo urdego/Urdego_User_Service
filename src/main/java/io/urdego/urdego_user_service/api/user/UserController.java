@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.urdego.urdego_user_service.api.user.dto.request.*;
 import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
+import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
 import io.urdego.urdego_user_service.domain.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -114,11 +115,20 @@ public class UserController {
 		return ResponseEntity.ok(response);
 	}
 
+
 	@GetMapping("users/search")
 	@ApiResponse(responseCode = "200", description = "응답 예시 : user{...}" , content = @Content(schema = @Schema(implementation = UserResponse.class)))
 	@Operation(summary = "닉네임으로 유저 찾기", description = "닉네임으로 유저를 찾는다.")
 	public ResponseEntity<UserResponse> searchUser(@RequestParam("nickname") String nickname) {
 		UserResponse response = userService.searchByNickname(nickname);
 		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("users/search/word")
+	@ApiResponse(responseCode = "200", description = "응답 예시 : user{...}" , content = @Content(schema = @Schema(implementation = UserResponse.class)))
+	@Operation(summary = "단어가 포함된 닉네임의 유저 찾기", description = "단어를 포함하는 닉네임의 유저를 찾는다.")
+	public ResponseEntity<List<UserResponse>> searchUserByWord(@RequestParam String word) {
+		List<UserResponse> responses = userService.searchByWord(word);
+		return ResponseEntity.ok(responses);
 	}
 }

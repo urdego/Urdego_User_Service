@@ -145,6 +145,11 @@ public class UserServiceImpl implements UserService {
 		return UserResponse.from(user);
 	}
 
+	@Override
+	public List<UserResponse> searchByWord(String word) {
+		return userRepository.findByWord(word).stream().map(UserResponse::from).toList();
+	}
+
 	// 공통 component
 	private User readByUserId(Long userId) {
 		User user = userRepository.findByIdAndIsDeletedFalse(userId).orElseThrow(()-> NotFoundUserException.EXCEPTION);

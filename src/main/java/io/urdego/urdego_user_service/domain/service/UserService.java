@@ -31,4 +31,5 @@ public interface UserService {
 	//findByNickname
 	UserResponse searchByNickname(String nickname);
 
+	List<UserResponse> searchByWord(String word);
 }
