@@ -6,12 +6,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.urdego.urdego_user_service.api.user.dto.request.*;
+import io.urdego.urdego_user_service.api.user.dto.response.LevelResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserSimpleResponse;
-import io.urdego.urdego_user_service.domain.entity.User;
-import io.urdego.urdego_user_service.domain.entity.User;
-import io.urdego.urdego_user_service.domain.repository.UserRepository;
 import io.urdego.urdego_user_service.domain.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +22,6 @@ import java.util.List;
 @RequestMapping("api/user-service")
 public class UserController {
 	private final UserService userService;
-	private final UserRepository userRepository;
 	//private final JwtService jwtService;
 
 	/*// 토큰 재발급
@@ -131,5 +128,14 @@ public class UserController {
 	public ResponseEntity<List<UserResponse>> searchUserByWord(@RequestParam String word) {
 		List<UserResponse> responses = userService.searchByWord(word);
 		return ResponseEntity.ok(responses);
+	}
+
+	@PostMapping("users/exp/{userId}")
+	@ApiResponse(responseCode = "200", description = "응답 예시 : 1" , content = @Content(schema = @Schema(implementation = LevelResponse.class)))
+	@Operation(summary = "경험치 추가 및 레벨업 여부", description = "게임이 끝난 후 경험치 추가 및 레벨업 여부 반환")
+	public ResponseEntity<LevelResponse> addUserExp(@PathVariable("userId") Long userId,
+													@RequestBody ExpRequest request) {
+		LevelResponse response = userService.addExp(userId,request.exp());
+		return ResponseEntity.ok(response);
 	}
 }

@@ -23,10 +23,12 @@ public record UserResponse(
 		String activeCharacter,
 		List<String> ownedCharacters,
 		Long exp,
+		int level,
 		Role role
 ) {
 	public static UserResponse from(User user) {
-		return new UserResponse(user.getId(),
+		return new UserResponse(
+				user.getId(),
 				user.getEmail(),
 				user.getName(),
 				user.getNickname(),
@@ -37,6 +39,7 @@ public record UserResponse(
 						.map(userCharacter -> userCharacter.getCharacter().getName())
 						.collect(Collectors.toList()),
 				user.getExp(),
+				user.getLevel(),
 				user.getRole());
 	}
 }
