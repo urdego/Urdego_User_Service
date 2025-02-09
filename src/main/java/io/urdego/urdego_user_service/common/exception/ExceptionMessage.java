@@ -11,6 +11,7 @@ public enum ExceptionMessage {
     ReLogin_Fail("재 로그인 실패.",HttpStatus.INTERNAL_SERVER_ERROR, "ReLogin Fail."),
     //user
     NOT_FOUND_USER("유효하지 않은 UserId 입니다.", HttpStatus.NOT_FOUND,"Not found UserId."),
+    NOT_FOUND_USER_NICKNAME("해당 닉네임의 유저를 찾을 수 없습니다.", HttpStatus.NOT_FOUND,"Not found UserNickname."),
     INVALID_NICKNAME("부적절한 닉네임 입니다.", HttpStatus.BAD_REQUEST, " Nickname contains inappropriate words."),
     DUPLICATED_NICKNAME("이미 사용중인 닉네임 입니다.", HttpStatus.CONFLICT, "This nickname already use."),
 

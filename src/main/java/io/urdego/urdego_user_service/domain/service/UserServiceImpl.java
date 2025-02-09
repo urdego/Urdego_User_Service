@@ -6,10 +6,7 @@ import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
 import io.urdego.urdego_user_service.common.enums.PlatformType;
 import io.urdego.urdego_user_service.common.exception.character.InvalidCharacterException;
-import io.urdego.urdego_user_service.common.exception.user.DuplicatedNicknameUserException;
-import io.urdego.urdego_user_service.common.exception.user.InvalidActiveCharacterException;
-import io.urdego.urdego_user_service.common.exception.user.NotFoundUserException;
-import io.urdego.urdego_user_service.common.exception.user.ReLoginFailException;
+import io.urdego.urdego_user_service.common.exception.user.*;
 import io.urdego.urdego_user_service.common.exception.userCharacter.DuplicatedCharacterUserException;
 import io.urdego.urdego_user_service.common.exception.userCharacter.NotFoundCharacterException;
 import io.urdego.urdego_user_service.domain.entity.GameCharacter;
@@ -137,6 +134,15 @@ public class UserServiceImpl implements UserService {
 		userRepository.save(user);
 
 		return UserCharacterResponse.from(user);
+	}
+
+	@Override
+	public UserResponse searchByNickname(String nickname) {
+		log.info("searchByNickname : {}", nickname);
+		User user = userRepository.findByNickname(nickname)
+				.orElseThrow(()-> NotFoundUserNicknameException.EXCEPTION);
+
+		return UserResponse.from(user);
 	}
 
 	// 공통 component

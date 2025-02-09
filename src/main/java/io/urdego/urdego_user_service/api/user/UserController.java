@@ -113,4 +113,12 @@ public class UserController {
 		UserCharacterResponse response = userService.addCharacter(userId, reqeust);
 		return ResponseEntity.ok(response);
 	}
+
+	@GetMapping("users/search")
+	@ApiResponse(responseCode = "200", description = "응답 예시 : user{...}" , content = @Content(schema = @Schema(implementation = UserResponse.class)))
+	@Operation(summary = "닉네임으로 유저 찾기", description = "닉네임으로 유저를 찾는다.")
+	public ResponseEntity<UserResponse> searchUser(@RequestParam("nickname") String nickname) {
+		UserResponse response = userService.searchByNickname(nickname);
+		return ResponseEntity.ok(response);
+	}
 }

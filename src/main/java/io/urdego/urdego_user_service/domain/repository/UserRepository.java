@@ -1,6 +1,7 @@
 package io.urdego.urdego_user_service.domain.repository;
 
 import io.lettuce.core.dynamic.annotation.Param;
+import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
 import io.urdego.urdego_user_service.domain.entity.User;
 
 import java.util.List;
@@ -26,5 +27,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	List<User> findByName(String name);
 
 
-
+    Optional<User> findByNickname(String nickname);
 }

@@ -28,4 +28,7 @@ public interface UserService {
 	//add Character
 	UserCharacterResponse addCharacter(Long userId,ChangeCharacterRequest changeCharacterRequest);
 
+	//findByNickname
+	UserResponse searchByNickname(String nickname);
+
 }
