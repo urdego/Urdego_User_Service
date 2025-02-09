@@ -1,17 +1,14 @@
 package io.urdego.urdego_user_service.domain.service;
 
-import feign.FeignException;
 import io.urdego.urdego_user_service.api.user.dto.request.ChangeCharacterRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
-import io.urdego.urdego_user_service.api.user.dto.response.ChangeCharacterResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
 import io.urdego.urdego_user_service.common.enums.PlatformType;
 import io.urdego.urdego_user_service.common.exception.character.InvalidCharacterException;
-import io.urdego.urdego_user_service.common.exception.user.DuplicatedNicknameUserException;
-import io.urdego.urdego_user_service.common.exception.user.NotFoundUserException;
-import io.urdego.urdego_user_service.common.exception.user.ReLoginFailException;
+import io.urdego.urdego_user_service.common.exception.user.*;
 import io.urdego.urdego_user_service.common.exception.userCharacter.DuplicatedCharacterUserException;
+import io.urdego.urdego_user_service.common.exception.userCharacter.NotFoundCharacterException;
 import io.urdego.urdego_user_service.domain.entity.GameCharacter;
 import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.domain.entity.UserCharacter;
@@ -22,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -42,7 +40,6 @@ public class UserServiceImpl implements UserService {
 			User existingUser = userRepository.findByEmailAndPlatformType(userSignUpRequest.email(), platformType).orElseThrow(()-> NotFoundUserException.EXCEPTION);
 
 			//삭제된 회원일 경우
-			// TODO Query DSL?
 			if(existingUser.getIsDeleted().equals(Boolean.TRUE)){
 				existingUser.initUserInfo(userSignUpRequest.platformId());
 				initActiveCharacter(existingUser);
@@ -66,11 +63,23 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public List<UserResponse> readUserInfoList(List<Long> userIds) {
+		List<User> users = userRepository.findAllById(userIds);
+		List<UserResponse> responses = new ArrayList<>();
+		for(User user : users) {
+			UserResponse response = UserResponse.from(user);
+			responses.add(response);
+		}
+		return responses;
+	}
+
+	@Override
 	public void deleteUser(Long userId, String drawalRequest) {
 		User user = readByUserId(userId);
 		user.setRoleAndDrawalReason(drawalRequest);
 		UserCharacter userCharacter = userCharacterRepository.findByUser(user)
 				.orElseThrow(()-> NotFoundUserException.EXCEPTION);
+		userCharacterRepository.delete(userCharacter);
 		userRepository.save(user);
 	}
 
@@ -86,8 +95,26 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public ChangeCharacterResponse updateCharacter(Long userId, ChangeCharacterRequest changeCharacterRequest) {
-		return null;
+	public UserCharacterResponse updateActiveCharacter(Long userId, ChangeCharacterRequest request) {
+		User user = readByUserId(userId);
+		GameCharacter changeCharacter = gameCharacterRepository.findByName(request.characterName())
+				.orElseThrow(()-> InvalidCharacterException.EXCEPTION);
+		// 바꾸고자 하는 캐릭터가 보유한 캐릭터에 있는지? 없으면 에러!!
+		for(int i = 0; i < user.getOwnedCharacters().size(); i++){
+			if(!user.getOwnedCharacters().get(1).getCharacter().getName().equals(request.characterName())){
+				throw NotFoundCharacterException.EXCEPTION;
+			}
+		}
+
+		// 현재 사용 중인 캐릭터와 동일하지 않은지?
+		if(user.getActiveCharacter().equals(changeCharacter)){
+			throw InvalidActiveCharacterException.EXCEPTION;
+		}
+
+		//저장
+		user.changeActiveCharacter(changeCharacter);
+		userRepository.save(user);
+		return UserCharacterResponse.from(user);
 	}
 
 	@Override
@@ -98,20 +125,27 @@ public class UserServiceImpl implements UserService {
 
 		log.info("characterId : {}",addGameCharacter.getId());
 
-		if(userCharacterRepository.existsByUserAndCharacter(user,addGameCharacter)){
+		if(userCharacterRepository.existsByUserAndCharacter(user, addGameCharacter)){
 			throw DuplicatedCharacterUserException.EXCEPTION;
 		}
 
 		UserCharacter userCharacter = new UserCharacter(user, addGameCharacter);
 		user.addCharacter(userCharacter);
-		userCharacterRepository.save(userCharacter);
+		userRepository.save(user);
 
-		UserCharacterResponse response = UserCharacterResponse.from(user);
-		return response;
+		return UserCharacterResponse.from(user);
+	}
+
+	@Override
+	public UserResponse searchByNickname(String nickname) {
+		log.info("searchByNickname : {}", nickname);
+		User user = userRepository.findByNickname(nickname)
+				.orElseThrow(()-> NotFoundUserNicknameException.EXCEPTION);
+
+		return UserResponse.from(user);
 	}
 
 	// 공통 component
-	// userId 검증
 	private User readByUserId(Long userId) {
 		User user = userRepository.findByIdAndIsDeletedFalse(userId).orElseThrow(()-> NotFoundUserException.EXCEPTION);
 		return user;
@@ -142,8 +176,6 @@ public class UserServiceImpl implements UserService {
 	private UserCharacter initActiveCharacter(User user){
 		GameCharacter basicCharacter = gameCharacterRepository.findById(1L).orElse(null);
 		//탈퇴 후 재 로그인 시
-		//TODO 탈퇴 후 재로그인 시 에러 발생 !!
-		//왜냐면 재 로그인 시 이미 UserCharacters 테이블에 userId가 있음
 		if(!user.getOwnedCharacters().isEmpty()){
 			UserCharacter existUser = userCharacterRepository.findByUser(user)
 					.orElseThrow(()-> ReLoginFailException.EXCEPTION);
@@ -154,6 +186,4 @@ public class UserServiceImpl implements UserService {
 		user.getOwnedCharacters().add(userCharacter);
 		return userCharacter;
 	}
-
-
 }

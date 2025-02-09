@@ -6,13 +6,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.urdego.urdego_user_service.api.user.dto.request.*;
-import io.urdego.urdego_user_service.api.user.dto.response.ChangeCharacterResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
-//import io.urdego.urdego_user_service.auth.jwt.JwtService;
-import io.urdego.urdego_user_service.domain.entity.UserCharacter;
+import io.urdego.urdego_user_service.domain.repository.UserRepository;
 import io.urdego.urdego_user_service.domain.service.UserService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +21,7 @@ import java.util.List;
 @RequestMapping("api/user-service")
 public class UserController {
 	private final UserService userService;
+	private final UserRepository userRepository;
 	//private final JwtService jwtService;
 
 	/*// 토큰 재발급
@@ -61,6 +59,13 @@ public class UserController {
 		return ResponseEntity.ok(response);
 	}
 
+	//회원 정보 조회 (리스트)
+	@GetMapping("/users")
+	public ResponseEntity<List<UserResponse>> getUsers(@RequestBody UserInfoListRequest request) {
+		return ResponseEntity.ok().body(userService.readUserInfoList(request.userIds()));
+	}
+
+
 	//회원 탈퇴
 	@DeleteMapping("/users/{userId}")
 	@Operation(summary = "회원 탈퇴 DB삭제", description = "userId로 회원정보 softDelete")
@@ -81,7 +86,7 @@ public class UserController {
 
 	//닉네임 변경
 	@PostMapping("users/nickname/{userId}")
-	@ApiResponse(responseCode = "200", description = "응답 예시 : changedNickname111")
+	@ApiResponse(responseCode = "200", description = "응답 예시 : changedNickname111",content = @Content(schema = @Schema(implementation = UserResponse.class)))
 	@Operation(summary = "닉네임 변경", description = "중복확인이 된 닉네임으로 변경")
 	public ResponseEntity<String> changeNickname(@PathVariable("userId") Long userId,
 												 @RequestBody ChangeNicknameRequest request) {
@@ -91,25 +96,29 @@ public class UserController {
 
 	//캐릭터 변경
 	@PostMapping("users/character/change/{userId}")
-	@ApiResponse(responseCode = "캐릭터 변경", description = "응답 예시 : userId, FIRST")
+	@ApiResponse(responseCode = "200", description = "응답 예시 : activeCharacter : BASIC" , content = @Content(schema = @Schema(implementation = UserCharacterResponse.class)))
 	@Operation(summary = "캐릭터 변경", description = "캐릭터 변경 사항 저장")
-	public ResponseEntity<ChangeCharacterResponse> changeCharacter(@PathVariable("userId") Long userId,
+	public ResponseEntity<UserCharacterResponse> changeCharacter(@PathVariable("userId") Long userId,
 																   @RequestBody ChangeCharacterRequest changeCharacterRequest) {
-		ChangeCharacterResponse response = userService.updateCharacter(userId, changeCharacterRequest);
+		UserCharacterResponse response = userService.updateActiveCharacter(userId, changeCharacterRequest);
 		return ResponseEntity.ok(response);
 	}
 
-	/*//유저가 가지고 있는 캐릭터 조회
-	@GetMapping("users/character/{userId}")
-	public ResponseEntity<List<UserCharacter>> getCharacters(@PathVariable("userId") Long userId) {
-
-	}*/
-
 	//캐릭터 획득 (유저에게)
 	@PostMapping("users/character/add/{userId}")
+	@ApiResponse(responseCode = "200", description = "응답 예시 : ownedCharacter [...]" , content = @Content(schema = @Schema(implementation = UserCharacterResponse.class)))
+	@Operation(summary = "캐릭터 획득(유저 별)", description = "유저가 소유한 캐릭터 추가")
 	public ResponseEntity<UserCharacterResponse> addCharacter(@PathVariable("userId") Long userId,
 															  @RequestBody ChangeCharacterRequest reqeust){
 		UserCharacterResponse response = userService.addCharacter(userId, reqeust);
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("users/search")
+	@ApiResponse(responseCode = "200", description = "응답 예시 : user{...}" , content = @Content(schema = @Schema(implementation = UserResponse.class)))
+	@Operation(summary = "닉네임으로 유저 찾기", description = "닉네임으로 유저를 찾는다.")
+	public ResponseEntity<UserResponse> searchUser(@RequestParam("nickname") String nickname) {
+		UserResponse response = userService.searchByNickname(nickname);
 		return ResponseEntity.ok(response);
 	}
 }

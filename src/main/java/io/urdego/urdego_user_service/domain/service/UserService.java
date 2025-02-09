@@ -2,9 +2,10 @@ package io.urdego.urdego_user_service.domain.service;
 
 import io.urdego.urdego_user_service.api.user.dto.request.ChangeCharacterRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
-import io.urdego.urdego_user_service.api.user.dto.response.ChangeCharacterResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
+
+import java.util.List;
 
 public interface UserService {
 	//create
@@ -13,6 +14,8 @@ public interface UserService {
 	//read
 	UserResponse findByUserId(Long userId);
 
+	List<UserResponse> readUserInfoList(List<Long> userIds);
+
 	//update Nickname
 	UserResponse updateNickname(Long userId, String newNickname);
 
@@ -20,9 +23,12 @@ public interface UserService {
 	void deleteUser(Long id, String drawalRequest);
 
 	//update Character
-	ChangeCharacterResponse updateCharacter(Long userId, ChangeCharacterRequest changeCharacterRequest);
+	UserCharacterResponse updateActiveCharacter(Long userId, ChangeCharacterRequest changeCharacterRequest);
 
 	//add Character
 	UserCharacterResponse addCharacter(Long userId,ChangeCharacterRequest changeCharacterRequest);
+
+	//findByNickname
+	UserResponse searchByNickname(String nickname);
 
 }

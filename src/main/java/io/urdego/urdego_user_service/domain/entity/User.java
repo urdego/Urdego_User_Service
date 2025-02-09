@@ -93,7 +93,7 @@ public class User extends BaseTimeEntity{
 		this.isDeleted = false;
 		this.withDrawalReason = null;
 		this.platformId = platformId;
-		this.ownedCharacters = new ArrayList<>();
+		this.ownedCharacters.clear();
 		this.exp = 0L;
 	}
 
