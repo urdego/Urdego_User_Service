@@ -60,7 +60,7 @@ public class UserController {
 	}
 
 	//회원 정보 조회 (리스트)
-	@GetMapping("/users")
+	@PostMapping("/users")
 	public ResponseEntity<List<UserSimpleResponse>> getUsers(@RequestBody UserInfoListRequest request) {
 		return ResponseEntity.ok().body(userService.readUserInfoList(request.userIds()));
 	}
