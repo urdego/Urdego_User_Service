@@ -10,6 +10,7 @@ public record UserSimpleResponse(
         String nickname,
         String activeCharacter,
         List<String> ownedCharacters,
+        int level,
         Long exp
 ) {
     public static UserSimpleResponse from(User user) {
@@ -20,6 +21,7 @@ public record UserSimpleResponse(
                 user.getOwnedCharacters().stream()
                         .map(userCharacter -> userCharacter.getCharacter().getName())
                         .collect(Collectors.toList()),
+                user.getLevel(),
                 user.getExp()
         );
     }
