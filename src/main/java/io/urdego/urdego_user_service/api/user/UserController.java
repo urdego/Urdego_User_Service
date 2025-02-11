@@ -59,12 +59,17 @@ public class UserController {
 		return ResponseEntity.ok(response);
 	}
 
-	//회원 정보 조회 (리스트)
+	//회원 정보 조회 (리스트)(백엔드)
 	@PostMapping("/users")
 	public ResponseEntity<List<UserSimpleResponse>> getUsers(@RequestBody UserInfoListRequest request) {
 		return ResponseEntity.ok().body(userService.readUserInfoList(request.userIds()));
 	}
 
+	//회원 정보 조회 (단일)(백엔드)
+	@GetMapping("/users/simple")
+	public ResponseEntity<UserSimpleResponse> getSimpleUser(@RequestParam Long userId) {
+		return ResponseEntity.ok().body(userService.readUserInfo(userId));
+	}
 
 	//회원 탈퇴
 	@DeleteMapping("/users/{userId}")

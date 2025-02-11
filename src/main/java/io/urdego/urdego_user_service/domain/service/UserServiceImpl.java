@@ -66,6 +66,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public UserSimpleResponse readUserInfo(Long userId) {
+		User user = readByUserId(userId);
+		return UserSimpleResponse.from(user);
+	}
+
+	@Override
 	public List<UserSimpleResponse> readUserInfoList(List<Long> userIds) {
 		List<User> users = userRepository.findAllById(userIds);
 		List<UserSimpleResponse> responses = new ArrayList<>();

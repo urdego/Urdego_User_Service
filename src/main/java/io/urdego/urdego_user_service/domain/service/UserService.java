@@ -18,6 +18,8 @@ public interface UserService {
 	//read
 	UserResponse findByUserId(Long userId);
 
+	UserSimpleResponse readUserInfo(Long userId);
+
 	List<UserSimpleResponse> readUserInfoList(List<Long> userIds);
 
 	//update Nickname
