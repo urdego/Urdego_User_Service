@@ -15,7 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 @RestController
 @RequiredArgsConstructor
@@ -57,18 +59,6 @@ public class UserController {
 	public ResponseEntity<UserResponse> getUser(@PathVariable Long userId) {
 		UserResponse response = userService.findByUserId(userId);
 		return ResponseEntity.ok(response);
-	}
-
-	//회원 정보 조회 (리스트)(백엔드)
-	@PostMapping("/users")
-	public ResponseEntity<List<UserSimpleResponse>> getUsers(@RequestBody UserInfoListRequest request) {
-		return ResponseEntity.ok().body(userService.readUserInfoList(request.userIds()));
-	}
-
-	//회원 정보 조회 (단일)(백엔드)
-	@GetMapping("/users/simple")
-	public ResponseEntity<UserSimpleResponse> getSimpleUser(@RequestParam Long userId) {
-		return ResponseEntity.ok().body(userService.readUserInfo(userId));
 	}
 
 	//회원 탈퇴
@@ -135,12 +125,28 @@ public class UserController {
 		return ResponseEntity.ok(responses);
 	}
 
-	@PostMapping("users/exp/{userId}")
+	@PostMapping("users/add/exp")
 	@ApiResponse(responseCode = "200", description = "응답 예시 : 1" , content = @Content(schema = @Schema(implementation = LevelResponse.class)))
 	@Operation(summary = "경험치 추가 및 레벨업 여부", description = "게임이 끝난 후 경험치 추가 및 레벨업 여부 반환")
-	public ResponseEntity<LevelResponse> addUserExp(@PathVariable("userId") Long userId,
-													@RequestBody ExpRequest request) {
-		LevelResponse response = userService.addExp(userId,request.exp());
-		return ResponseEntity.ok(response);
+	public ResponseEntity<List<LevelResponse>> addUserExp(@RequestBody List<ExpRequest> requests) {
+		//TODO List로 요청 수정
+		List<LevelResponse> responses = userService.addExp(requests);
+		return ResponseEntity.ok(responses);
+	}
+
+	/*
+	* 백엔드 내부 통신용 api
+	*/
+
+	//회원 정보 조회 (리스트)(백엔드)
+	@PostMapping("/users")
+	public ResponseEntity<List<UserSimpleResponse>> getUsers(@RequestBody UserInfoListRequest request) {
+		return ResponseEntity.ok().body(userService.readUserInfoList(request.userIds()));
+	}
+
+	//회원 정보 조회 (단일)(백엔드)
+	@GetMapping("/users/simple")
+	public ResponseEntity<UserSimpleResponse> getSimpleUser(@RequestParam Long userId) {
+		return ResponseEntity.ok().body(userService.readUserInfo(userId));
 	}
 }

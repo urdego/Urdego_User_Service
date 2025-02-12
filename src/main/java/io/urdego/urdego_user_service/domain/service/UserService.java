@@ -1,6 +1,7 @@
 package io.urdego.urdego_user_service.domain.service;
 
 import io.urdego.urdego_user_service.api.user.dto.request.ChangeCharacterRequest;
+import io.urdego.urdego_user_service.api.user.dto.request.ExpRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
 import io.urdego.urdego_user_service.api.user.dto.response.LevelResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse;
@@ -39,7 +40,7 @@ public interface UserService {
 
 	List<UserResponse> searchByWord(String word);
 
-	LevelResponse addExp(Long userId, Long exp);
+	List<LevelResponse> addExp(List<ExpRequest> requests);
 
 	UserCharacter levelReword(User user, int characterIndex);
 }

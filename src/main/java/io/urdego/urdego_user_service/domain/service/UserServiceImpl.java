@@ -1,6 +1,7 @@
 package io.urdego.urdego_user_service.domain.service;
 
 import io.urdego.urdego_user_service.api.user.dto.request.ChangeCharacterRequest;
+import io.urdego.urdego_user_service.api.user.dto.request.ExpRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
 import io.urdego.urdego_user_service.api.user.dto.response.LevelResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse;
@@ -23,7 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -162,23 +165,35 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public LevelResponse addExp(Long userId, Long exp) {
-		boolean isLevelUp = false;
-		User user = readByUserId(userId);
-		Long totalExp = user.addExp(exp);
-		log.info("totalExp : {}", totalExp);
-		int beforeLevel = user.getLevel();
-		int afterLevel = calculateLevel(totalExp);
-		log.info("before level : {} after level : {} ", beforeLevel, afterLevel);
+	@Transactional
+	public List<LevelResponse> addExp(List<ExpRequest> requests) {
+		List<LevelResponse> responses = new ArrayList<>();
+		List<User> updateUserList = new ArrayList<>();
 
-		if(beforeLevel < afterLevel){
-			UserCharacter userCharacter = levelReword(user,afterLevel);
-			user.getOwnedCharacters().add(userCharacter);
-			user.levelUp(afterLevel);
-			isLevelUp = true;
+		for(ExpRequest request : requests) {
+			boolean isLevelUp = false;
+			User user = readByUserId(request.userId());
+			Long totalExp = user.addExp(request.exp());
+			log.info("totalExp : {}", totalExp);
+
+			int beforeLevel = user.getLevel();
+			int afterLevel = calculateLevel(totalExp);
+			log.info("before level : {} after level : {} ", beforeLevel, afterLevel);
+
+			//레벨업 했다면
+			if(beforeLevel < afterLevel){
+				UserCharacter userCharacter = levelReword(user, afterLevel);
+				user.getOwnedCharacters().add(userCharacter);
+				user.levelUp(afterLevel);
+				isLevelUp = true;
+			}
+
+			updateUserList.add(user);
+			LevelResponse response = LevelResponse.from(user,isLevelUp);
+			responses.add(response);
 		}
-		userRepository.save(user);
-		return LevelResponse.from(user,isLevelUp);
+		userRepository.saveAll(updateUserList);
+		return responses;
 	}
 
 
