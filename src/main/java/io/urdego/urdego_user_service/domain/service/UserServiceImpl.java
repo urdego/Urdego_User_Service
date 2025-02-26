@@ -153,7 +153,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserResponse searchByNickname(String nickname) {
 		log.info("searchByNickname : {}", nickname);
-		User user = userRepository.findByNickname(nickname)
+		User user = userRepository.findByNicknameAndIsDeletedFalse(nickname)
 				.orElseThrow(()-> NotFoundUserNicknameException.EXCEPTION);
 
 		return UserResponse.from(user);
@@ -211,7 +211,9 @@ public class UserServiceImpl implements UserService {
 		return userCharacter;
 	}
 
-	// 공통 component
+	/* 공통 component
+
+	 */
 	private User readByUserId(Long userId) {
 		User user = userRepository.findByIdAndIsDeletedFalse(userId).orElseThrow(()-> NotFoundUserException.EXCEPTION);
 		return user;
