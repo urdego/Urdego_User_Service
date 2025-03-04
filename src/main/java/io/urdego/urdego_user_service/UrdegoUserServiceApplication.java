@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableConfigurationProperties
 public class UrdegoUserServiceApplication {
 
+	
 	public static void main(String[] args) {
 		SpringApplication.run(UrdegoUserServiceApplication.class, args);
 	}
