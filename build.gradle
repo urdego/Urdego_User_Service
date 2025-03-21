@@ -75,6 +75,13 @@ dependencies {
 	// Monitoring
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
+	// ONNX
+	implementation 'com.microsoft.onnxruntime:onnxruntime:1.20.0'
+
+	//Tokenizer DJL
+	implementation 'ai.djl.huggingface:tokenizers:0.31.1'
+
 }
 
 tasks.named('test') {
