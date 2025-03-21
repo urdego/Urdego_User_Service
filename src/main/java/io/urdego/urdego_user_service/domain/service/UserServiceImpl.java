@@ -47,7 +47,10 @@ public class UserServiceImpl implements UserService {
 
 			//삭제된 회원일 경우
 			if(existingUser.getIsDeleted().equals(Boolean.TRUE)){
+				List<User> userList = userRepository.findByName(userSignUpRequest.nickname());
+				int nicknameNumber = userList.size() + 1;
 				existingUser.initUserInfo(userSignUpRequest.platformId());
+				existingUser.updateNickname(userSignUpRequest.nickname() +"#"+nicknameNumber);
 				initActiveCharacter(existingUser);
 				userRepository.save(existingUser);
 				return UserResponse.from(existingUser);
