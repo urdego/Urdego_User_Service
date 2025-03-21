@@ -104,7 +104,10 @@ public class UserServiceImpl implements UserService {
 			throw DuplicatedNicknameUserException.EXCEPTION;
 		}
 		user.updateNickname(newNickname);
-		UserResponse response = UserResponse.from(userRepository.save(user));
+		userRepository.save(user);
+		log.info("new nickname : {}", newNickname);
+		log.info("real nickname : {}", user.getNickname());
+		UserResponse response = UserResponse.from(user);
 		return response;
 	}
 
