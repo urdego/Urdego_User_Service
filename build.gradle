@@ -77,7 +77,7 @@ dependencies {
 	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 
 	// ONNX
-	implementation 'com.microsoft.onnxruntime:onnxruntime:1.20.0'
+	implementation 'com.microsoft.onnxruntime:onnxruntime:1.21.0'
 
 	//Tokenizer DJL
 	implementation 'ai.djl.huggingface:tokenizers:0.31.1'

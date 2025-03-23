@@ -1,5 +1,7 @@
 package io.urdego.urdego_user_service.domain.service;
 
+import ai.onnxruntime.OrtException;
+import io.urdego.urdego_user_service.api.user.dto.request.BadWordResponse;
 import io.urdego.urdego_user_service.api.user.dto.request.ChangeCharacterRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.ExpRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
@@ -18,25 +20,30 @@ import io.urdego.urdego_user_service.domain.entity.UserCharacter;
 import io.urdego.urdego_user_service.domain.repository.GameCharacterRepository;
 import io.urdego.urdego_user_service.domain.repository.UserCharacterRepository;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
+import io.urdego.urdego_user_service.infra.model.OnnxInference;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
+	//학습 임계값
+	private static final float THRESHOLD = 0.5f;
 
 	private final UserRepository userRepository;
 	private final UserCharacterRepository userCharacterRepository;
 	private final GameCharacterRepository gameCharacterRepository;
+	private final OnnxInference onnxInference;
+	private final Tokenizer tokenizer;
 
 	@Override
 	public UserResponse saveUser(UserSignUpRequest userSignUpRequest) {
@@ -98,10 +105,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserResponse updateNickname(Long userId, String newNickname) {
+	public UserResponse updateNickname(Long userId, String newNickname)throws OrtException{
 		User user = readByUserId(userId);
 		if(userRepository.existsByNicknameAndIsDeletedFalse(newNickname)){
 			throw DuplicatedNicknameUserException.EXCEPTION;
+		}
+	    if(isProfane(newNickname)){
+			throw InvalidNicknameUserException.EXCEPTION;
 		}
 		user.updateNickname(newNickname);
 		userRepository.save(user);
@@ -284,5 +294,46 @@ public class UserServiceImpl implements UserService {
 			// 100 미만의 exp는 아직 레벨업이 되지 않은 것으로 처리
 			return 1;
 		}
+	}
+
+	@Override
+	public boolean isProfane(String plainText) throws OrtException{
+		BadWordResponse response = tokenizer.getTokenizer(plainText);
+		if(response == null || response.tokenIds() == null){
+			log.error("Tokenizer response is null for text : {}", plainText);
+			return true;
+		}
+
+		long[] tokenIds = response.tokenIds();
+		long[] attentionMask = response.attentionMask();
+		long[] inputShape = new long[]{1, tokenIds.length};
+		float[][] logits = onnxInference.runInference(tokenIds, attentionMask, inputShape);
+
+		// 모든 로짓에 대해 시그모이드 적용하여 확률 배열 생성
+		int numClasses = logits[0].length;
+		float[] probabilities = new float[numClasses];
+		for (int i = 0; i < numClasses; i++) {
+			probabilities[i] = (float)(1 / (1 + Math.exp(-logits[0][i])));
+		}
+
+		log.info("Logits: {}", Arrays.toString(logits[0]));
+		log.info("Probabilities: {}", Arrays.toString(probabilities));
+
+		boolean[] predictions = new boolean[numClasses];
+		for (int i = 0; i < numClasses; i++) {
+			predictions[i] = probabilities[i] >= THRESHOLD;
+		}
+		log.info("Predictions: {}", Arrays.toString(predictions));
+
+		// 예시: "clean"을 제외한 나머지 중 하나라도 true면 욕설이 포함된 것으로 간주
+		String[] labelNames = {"여성/가족", "남성", "성소수자", "인종/국적", "연령",
+				"지역", "종교", "기타 혐오", "악플/욕설", "clean"};
+		for (int i = 0; i < predictions.length; i++) {
+			if (predictions[i] && !labelNames[i].equals("clean")) {
+				log.info("Predicted Label: {}", labelNames[i]);
+				return true;
+			}
+		}
+		return false;
 	}
 }
