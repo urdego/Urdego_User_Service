@@ -156,4 +156,6 @@ public class UserController {
 	public boolean isProfane(@RequestBody BadWordTestRequest request)throws OrtException {
 		return userService.isProfane(request.testText());
 	}
+
+	
 }
