@@ -1,5 +1,6 @@
 package io.urdego.urdego_user_service.domain.service;
 
+import ai.onnxruntime.OrtException;
 import io.urdego.urdego_user_service.api.user.dto.request.ChangeCharacterRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.ExpRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
@@ -24,7 +25,7 @@ public interface UserService {
 	List<UserSimpleResponse> readUserInfoList(List<Long> userIds);
 
 	//update Nickname
-	UserResponse updateNickname(Long userId, String newNickname);
+	UserResponse updateNickname(Long userId, String newNickname)throws OrtException;
 
 	//delete
 	void deleteUser(Long id, String drawalRequest);
@@ -43,4 +44,6 @@ public interface UserService {
 	List<LevelResponse> addExp(List<ExpRequest> requests);
 
 	UserCharacter levelReword(User user, int characterIndex);
+
+	boolean isProfane(String plainText)throws OrtException;
 }

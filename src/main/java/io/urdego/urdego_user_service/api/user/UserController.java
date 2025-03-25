@@ -1,5 +1,6 @@
 package io.urdego.urdego_user_service.api.user;
 
+import ai.onnxruntime.OrtException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -84,7 +85,7 @@ public class UserController {
 	@ApiResponse(responseCode = "200", description = "응답 예시 : changedNickname111",content = @Content(schema = @Schema(implementation = UserResponse.class)))
 	@Operation(summary = "닉네임 변경", description = "중복확인이 된 닉네임으로 변경")
 	public ResponseEntity<String> changeNickname(@PathVariable("userId") Long userId,
-												 @RequestBody ChangeNicknameRequest request) {
+												 @RequestBody ChangeNicknameRequest request) throws OrtException {
 		UserResponse response = userService.updateNickname(userId, request.newNickname());
 		return ResponseEntity.ok(response.nickname());
 	}
@@ -148,5 +149,11 @@ public class UserController {
 	@GetMapping("/users/simple")
 	public ResponseEntity<UserSimpleResponse> getSimpleUser(@RequestParam Long userId) {
 		return ResponseEntity.ok().body(userService.readUserInfo(userId));
+	}
+
+	//Test API
+	@GetMapping("/users/profane/check")
+	public boolean isProfane(@RequestBody BadWordTestRequest request)throws OrtException {
+		return userService.isProfane(request.testText());
 	}
 }
