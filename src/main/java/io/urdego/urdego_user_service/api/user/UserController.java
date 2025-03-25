@@ -152,10 +152,10 @@ public class UserController {
 	}
 
 	//Test API
-	@GetMapping("/users/profane/check")
+	/*@GetMapping("/users/profane/check")
 	public boolean isProfane(@RequestBody BadWordTestRequest request)throws OrtException {
 		return userService.isProfane(request.testText());
-	}
+	}*/
 
 
 }
