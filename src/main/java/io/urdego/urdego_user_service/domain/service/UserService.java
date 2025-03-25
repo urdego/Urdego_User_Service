@@ -45,5 +45,5 @@ public interface UserService {
 
 	UserCharacter levelReword(User user, int characterIndex);
 
-	//boolean isProfane(String plainText)throws OrtException;
+	boolean isProfane(String plainText)throws OrtException;
 }

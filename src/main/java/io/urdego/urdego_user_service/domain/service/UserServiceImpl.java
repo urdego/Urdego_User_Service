@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final UserCharacterRepository userCharacterRepository;
 	private final GameCharacterRepository gameCharacterRepository;
-	//private final OnnxInference onnxInference;
+	private final OnnxInference onnxInference;
 	private final Tokenizer tokenizer;
 
 	@Override
@@ -296,7 +296,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
-	/*@Override
+	@Override
 	public boolean isProfane(String plainText) throws OrtException{
 		BadWordResponse response = tokenizer.getTokenizer(plainText);
 		if(response == null || response.tokenIds() == null){
@@ -335,5 +335,5 @@ public class UserServiceImpl implements UserService {
 			}
 		}
 		return false;
-	}*/
+	}
 }
