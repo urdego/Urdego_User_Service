@@ -110,9 +110,9 @@ public class UserServiceImpl implements UserService {
 		if(userRepository.existsByNicknameAndIsDeletedFalse(newNickname)){
 			throw DuplicatedNicknameUserException.EXCEPTION;
 		}
-	    /*if(isProfane(newNickname)){
+	    if(isProfane(newNickname)){
 			throw InvalidNicknameUserException.EXCEPTION;
-		}*/
+		}
 		user.updateNickname(newNickname);
 		userRepository.save(user);
 		log.info("new nickname : {}", newNickname);
