@@ -157,5 +157,5 @@ public class UserController {
 		return userService.isProfane(request.testText());
 	}
 
-	
+
 }
