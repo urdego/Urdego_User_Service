@@ -39,4 +39,6 @@ out/
 *.yml
 *.p8
 
+*.onnx
+
 ~/static/
