@@ -44,6 +44,4 @@ public interface UserService {
 	List<LevelResponse> addExp(List<ExpRequest> requests);
 
 	UserCharacter levelReword(User user, int characterIndex);
-
-	boolean isProfane(String plainText)throws OrtException;
 }
