@@ -5,6 +5,7 @@ import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse
 import io.urdego.urdego_user_service.common.exception.character.InvalidCharacterException;
 import io.urdego.urdego_user_service.common.exception.user.InvalidActiveCharacterException;
 import io.urdego.urdego_user_service.common.exception.user.ReLoginFailException;
+import io.urdego.urdego_user_service.common.exception.userCharacter.DuplicatedCharacterUserException;
 import io.urdego.urdego_user_service.common.exception.userCharacter.NotFoundCharacterException;
 import io.urdego.urdego_user_service.domain.entity.GameCharacter;
 import io.urdego.urdego_user_service.domain.entity.User;
@@ -25,6 +26,8 @@ public class UserCharacterCommander {
     private final UserReader userReader;
     private final UserCommander userCommander;
 
+    private final UserCharacterReader userCharacterReader;
+
     //기본 캐릭터로 초기화
     public UserCharacter initActiveCharacter(User user){
         GameCharacter basicCharacter = gameCharacterRepository.findById(1L).orElse(null);
@@ -40,10 +43,9 @@ public class UserCharacterCommander {
         return userCharacter;
     }
 
-    public UserCharacterResponse updateActiveCharacter(Long userId, ChangeCharacterRequest request) {
-        User user = userReader.readByUserId(userId);
-        GameCharacter changeCharacter = gameCharacterRepository.findByName(request.characterName())
-                .orElseThrow(()-> InvalidCharacterException.EXCEPTION);
+    public UserCharacterResponse updateActiveCharacter(
+            User user, ChangeCharacterRequest request) {
+        GameCharacter changeCharacter = userCharacterReader.readGameCharacterByName(request.characterName());
         // 바꾸고자 하는 캐릭터가 보유한 캐릭터에 있는지? 없으면 에러!!
         for(int i = 0; i < user.getOwnedCharacters().size(); i++){
 
@@ -63,5 +65,21 @@ public class UserCharacterCommander {
             }
         }
         throw NotFoundCharacterException.EXCEPTION;
+    }
+
+    public UserCharacterResponse addCharacter(User user, ChangeCharacterRequest request) {
+        GameCharacter addGameCharacter = userCharacterReader.readGameCharacterByName(request.characterName());
+
+        log.info("characterId : {}",addGameCharacter.getId());
+
+        if(userCharacterRepository.existsByUserAndCharacter(user, addGameCharacter)){
+            throw DuplicatedCharacterUserException.EXCEPTION;
+        }
+
+        UserCharacter userCharacter = new UserCharacter(user, addGameCharacter);
+        user.addCharacter(userCharacter);
+        userCommander.save(user);
+
+        return UserCharacterResponse.from(user);
     }
 }

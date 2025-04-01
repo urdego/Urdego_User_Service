@@ -1,7 +1,6 @@
 package io.urdego.urdego_user_service.domain.service;
 
 import ai.onnxruntime.OrtException;
-import io.urdego.urdego_user_service.api.user.dto.request.BadWordResponse;
 import io.urdego.urdego_user_service.api.user.dto.request.ChangeCharacterRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.ExpRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
@@ -11,7 +10,7 @@ import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserSimpleResponse;
 import io.urdego.urdego_user_service.common.enums.PlatformType;
 import io.urdego.urdego_user_service.common.exception.character.InvalidCharacterException;
-import io.urdego.urdego_user_service.common.exception.user.*;
+import io.urdego.urdego_user_service.common.exception.user.InvalidActiveCharacterException;
 import io.urdego.urdego_user_service.common.exception.userCharacter.DuplicatedCharacterUserException;
 import io.urdego.urdego_user_service.common.exception.userCharacter.NotFoundCharacterException;
 import io.urdego.urdego_user_service.domain.entity.GameCharacter;
@@ -21,14 +20,12 @@ import io.urdego.urdego_user_service.domain.repository.GameCharacterRepository;
 import io.urdego.urdego_user_service.domain.repository.UserCharacterRepository;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
 import io.urdego.urdego_user_service.domain.service.components.*;
-import io.urdego.urdego_user_service.infra.model.OnnxInference;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -48,7 +45,11 @@ public class UserServiceImpl implements UserService {
 	private final LevelCalculator levelCalculator;
 	private final UserReader userReader;
 	private final UserCommander userCommander;
+	private final UserDeleter userDeleter;
 	private final UserValidator userValidator;
+
+	private final UserCharacterReader userCharacterReader;
+	private final UserCharacterCommander userCharacterCommander;
 
 	@Override
 	public UserResponse saveUser(UserSignUpRequest userSignUpRequest) {
@@ -90,12 +91,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	@Transactional
 	public void deleteUser(Long userId, String drawalRequest) {
-		User user = userReader.readByUserId(userId);
-		user.setRoleAndDrawalReason(drawalRequest);
-		userCharacterRepository.deleteByUser(user);
-		userRepository.save(user);
+		userDeleter.delete(userId, drawalRequest);
 	}
 
 	@Override
@@ -106,46 +103,13 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserCharacterResponse updateActiveCharacter(Long userId, ChangeCharacterRequest request) {
 		User user = userReader.readByUserId(userId);
-		GameCharacter changeCharacter = gameCharacterRepository.findByName(request.characterName())
-				.orElseThrow(()-> InvalidCharacterException.EXCEPTION);
-		// 바꾸고자 하는 캐릭터가 보유한 캐릭터에 있는지? 없으면 에러!!
-		for(int i = 0; i < user.getOwnedCharacters().size(); i++){
-
-			log.info("characterName : {}", request.characterName());
-			log.info("ownedCharacter : {}", user.getOwnedCharacters().get(i).getCharacter().getName());
-
-			if(user.getOwnedCharacters().get(i).getCharacter().getName().equals(request.characterName())){
-				// 현재 사용 중인 캐릭터와 동일하지 않은지?
-				if(user.getActiveCharacter().equals(changeCharacter)){
-					throw InvalidActiveCharacterException.EXCEPTION;
-				}
-
-				//저장
-				user.changeActiveCharacter(changeCharacter);
-				userRepository.save(user);
-				return UserCharacterResponse.from(user);
-			}
-		}
-		throw NotFoundCharacterException.EXCEPTION;
+		return userCharacterCommander.updateActiveCharacter(user, request);
 	}
 
 	@Override
 	public UserCharacterResponse addCharacter(Long userId, ChangeCharacterRequest request) {
 		User user = userReader.readByUserId(userId);
-		GameCharacter addGameCharacter = gameCharacterRepository.findByName(request.characterName())
-				.orElseThrow(()-> InvalidCharacterException.EXCEPTION);
-
-		log.info("characterId : {}",addGameCharacter.getId());
-
-		if(userCharacterRepository.existsByUserAndCharacter(user, addGameCharacter)){
-			throw DuplicatedCharacterUserException.EXCEPTION;
-		}
-
-		UserCharacter userCharacter = new UserCharacter(user, addGameCharacter);
-		user.addCharacter(userCharacter);
-		userRepository.save(user);
-
-		return UserCharacterResponse.from(user);
+		return userCharacterCommander.addCharacter(user, request);
 	}
 
 	@Override
