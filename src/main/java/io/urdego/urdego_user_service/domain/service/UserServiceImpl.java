@@ -9,13 +9,7 @@ import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserSimpleResponse;
 import io.urdego.urdego_user_service.common.enums.PlatformType;
-import io.urdego.urdego_user_service.common.exception.character.InvalidCharacterException;
-import io.urdego.urdego_user_service.common.exception.user.InvalidActiveCharacterException;
-import io.urdego.urdego_user_service.common.exception.userCharacter.DuplicatedCharacterUserException;
-import io.urdego.urdego_user_service.common.exception.userCharacter.NotFoundCharacterException;
-import io.urdego.urdego_user_service.domain.entity.GameCharacter;
 import io.urdego.urdego_user_service.domain.entity.User;
-import io.urdego.urdego_user_service.domain.entity.UserCharacter;
 import io.urdego.urdego_user_service.domain.repository.GameCharacterRepository;
 import io.urdego.urdego_user_service.domain.repository.UserCharacterRepository;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
@@ -25,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -125,47 +118,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public List<LevelResponse> addExp(List<ExpRequest> requests) {
-		List<LevelResponse> responses = new ArrayList<>();
-		List<User> updateUserList = new ArrayList<>();
-
-		for(ExpRequest request : requests) {
-			boolean isLevelUp = false;
-			User user = userReader.readByUserId(request.userId());
-			Long totalExp = user.addExp(request.exp());
-			log.info("totalExp : {}", totalExp);
-
-			int beforeLevel = user.getLevel();
-			int afterLevel = levelCalculator.calculateLevel(totalExp);
-			log.info("before level : {} after level : {} ", beforeLevel, afterLevel);
-
-			//레벨업 했다면
-			if(beforeLevel < afterLevel){
-				UserCharacter userCharacter = levelReword(user, afterLevel);
-				user.getOwnedCharacters().add(userCharacter);
-				user.levelUp(afterLevel);
-				isLevelUp = true;
-			}
-
-			updateUserList.add(user);
-			LevelResponse response = LevelResponse.from(user,isLevelUp);
-			responses.add(response);
-		}
-		userCommander.saveAll(updateUserList);
+		List<LevelResponse> responses = userCommander.saveExp(requests);
 		return responses;
-	}
-
-
-	@Override
-	public UserCharacter levelReword(User user, int characterIndex) {
-		Long index = Long.valueOf(characterIndex);
-		GameCharacter addGameCharacter = gameCharacterRepository.findById(index)
-				.orElseThrow(() -> InvalidCharacterException.EXCEPTION);
-
-		if (userCharacterRepository.existsByUserAndCharacter(user, addGameCharacter)) {
-			throw DuplicatedCharacterUserException.EXCEPTION;
-		}
-
-		UserCharacter userCharacter = new UserCharacter(user, addGameCharacter);
-		return userCharacter;
 	}
 }

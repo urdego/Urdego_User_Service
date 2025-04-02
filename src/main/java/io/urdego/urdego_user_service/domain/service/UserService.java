@@ -42,6 +42,4 @@ public interface UserService {
 	List<UserResponse> searchByWord(String word);
 
 	List<LevelResponse> addExp(List<ExpRequest> requests);
-
-	UserCharacter levelReword(User user, int characterIndex);
 }

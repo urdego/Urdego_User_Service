@@ -1,19 +1,25 @@
 package io.urdego.urdego_user_service.domain.service.components;
 
 import ai.onnxruntime.OrtException;
+import io.urdego.urdego_user_service.api.user.dto.request.ExpRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
+import io.urdego.urdego_user_service.api.user.dto.response.LevelResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
+import io.urdego.urdego_user_service.common.exception.character.InvalidCharacterException;
 import io.urdego.urdego_user_service.common.exception.user.ReLoginFailException;
+import io.urdego.urdego_user_service.common.exception.userCharacter.DuplicatedCharacterUserException;
 import io.urdego.urdego_user_service.domain.entity.GameCharacter;
 import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.domain.entity.UserCharacter;
 import io.urdego.urdego_user_service.domain.repository.GameCharacterRepository;
 import io.urdego.urdego_user_service.domain.repository.UserCharacterRepository;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -27,6 +33,7 @@ public class UserCommander {
     private final UserReader userReader;
     private final UserValidator userValidator;
     private final UserCharacterCommander userCharacterCommander;
+    private final LevelCalculator levelCalculator;
 
     public void save(User user) {
         userRepository.save(user);
@@ -59,6 +66,7 @@ public class UserCommander {
         return existingUser;
     }
 
+    //닉네임 변경
     public User updateNickname(Long userId, String newNickname) throws OrtException {
         User user = userReader.readByUserId(userId);
         userValidator.validateNickname(newNickname);
@@ -75,5 +83,51 @@ public class UserCommander {
         List<User> userList = userReader.findByName(nickname);
         int nicknameNumber = userList.size() + 1;
         return nicknameNumber;
+    }
+
+    //경험치 획득
+    @Transactional
+    public List<LevelResponse> saveExp(List<ExpRequest> requests) {
+        List<LevelResponse> responses = new ArrayList<>();
+        List<User> updateUserList = new ArrayList<>();
+
+        for(ExpRequest request : requests) {
+            boolean isLevelUp = false;
+            User user = userReader.readByUserId(request.userId());
+            Long totalExp = user.addExp(request.exp());
+            log.info("totalExp : {}", totalExp);
+
+            int beforeLevel = user.getLevel();
+            int afterLevel = levelCalculator.calculateLevel(totalExp);
+            log.info("before level : {} after level : {} ", beforeLevel, afterLevel);
+
+            //레벨업 했다면
+            if(beforeLevel < afterLevel){
+                UserCharacter userCharacter = levelUpReword(user, afterLevel);
+                user.getOwnedCharacters().add(userCharacter);
+                user.levelUp(afterLevel);
+                isLevelUp = true;
+            }
+
+            updateUserList.add(user);
+            LevelResponse response = LevelResponse.from(user,isLevelUp);
+            responses.add(response);
+        }
+        saveAll(updateUserList);
+        return responses;
+    }
+
+    //레벨 업 보상 지급
+    public UserCharacter levelUpReword(User user, int characterIndex) {
+        Long index = Long.valueOf(characterIndex);
+        GameCharacter addGameCharacter = gameCharacterRepository.findById(index)
+                .orElseThrow(() -> InvalidCharacterException.EXCEPTION);
+
+        if (userCharacterRepository.existsByUserAndCharacter(user, addGameCharacter)) {
+            throw DuplicatedCharacterUserException.EXCEPTION;
+        }
+
+        UserCharacter userCharacter = new UserCharacter(user, addGameCharacter);
+        return userCharacter;
     }
 }
