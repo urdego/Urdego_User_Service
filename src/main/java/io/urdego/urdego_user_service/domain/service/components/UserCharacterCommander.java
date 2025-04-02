@@ -2,7 +2,6 @@ package io.urdego.urdego_user_service.domain.service.components;
 
 import io.urdego.urdego_user_service.api.user.dto.request.ChangeCharacterRequest;
 import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse;
-import io.urdego.urdego_user_service.common.exception.character.InvalidCharacterException;
 import io.urdego.urdego_user_service.common.exception.user.InvalidActiveCharacterException;
 import io.urdego.urdego_user_service.common.exception.user.ReLoginFailException;
 import io.urdego.urdego_user_service.common.exception.userCharacter.DuplicatedCharacterUserException;
@@ -24,7 +23,6 @@ public class UserCharacterCommander {
     private final GameCharacterRepository gameCharacterRepository;
 
     private final UserReader userReader;
-    private final UserCommander userCommander;
 
     private final UserCharacterReader userCharacterReader;
 
@@ -43,8 +41,9 @@ public class UserCharacterCommander {
         return userCharacter;
     }
 
-    public UserCharacterResponse updateActiveCharacter(
-            User user, ChangeCharacterRequest request) {
+    public User updateActiveCharacter(
+            Long userId, ChangeCharacterRequest request) {
+        User user = userReader.readByUserId(userId);
         GameCharacter changeCharacter = userCharacterReader.readGameCharacterByName(request.characterName());
         // 바꾸고자 하는 캐릭터가 보유한 캐릭터에 있는지? 없으면 에러!!
         for(int i = 0; i < user.getOwnedCharacters().size(); i++){
@@ -60,14 +59,14 @@ public class UserCharacterCommander {
 
                 //저장
                 user.changeActiveCharacter(changeCharacter);
-                userCommander.save(user);
-                return UserCharacterResponse.from(user);
+                return user;
             }
         }
         throw NotFoundCharacterException.EXCEPTION;
     }
 
-    public UserCharacterResponse addCharacter(User user, ChangeCharacterRequest request) {
+    public User addCharacter(Long userId, ChangeCharacterRequest request) {
+        User user = userReader.readByUserId(userId);
         GameCharacter addGameCharacter = userCharacterReader.readGameCharacterByName(request.characterName());
 
         log.info("characterId : {}",addGameCharacter.getId());
@@ -78,8 +77,7 @@ public class UserCharacterCommander {
 
         UserCharacter userCharacter = new UserCharacter(user, addGameCharacter);
         user.addCharacter(userCharacter);
-        userCommander.save(user);
 
-        return UserCharacterResponse.from(user);
+        return user;
     }
 }

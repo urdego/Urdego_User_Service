@@ -151,11 +151,13 @@ public class UserController {
 		return ResponseEntity.ok().body(userService.readUserInfo(userId));
 	}
 
+/*
 	//Test API
 	@PostMapping("/users/profane/check")
 	public boolean isProfane(@RequestBody BadWordTestRequest request)throws OrtException {
 		return userService.isProfane(request.testText());
 	}
+*/
 
 
 }

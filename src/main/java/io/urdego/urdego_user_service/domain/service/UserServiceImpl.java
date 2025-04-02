@@ -26,8 +26,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
-	//학습 임계값
-	private static final float THRESHOLD = 0.5f;
 
 	//Repository
 	private final UserRepository userRepository;
@@ -95,14 +93,16 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserCharacterResponse updateActiveCharacter(Long userId, ChangeCharacterRequest request) {
-		User user = userReader.readByUserId(userId);
-		return userCharacterCommander.updateActiveCharacter(user, request);
+		User user = userCharacterCommander.updateActiveCharacter(userId, request);
+		userCommander.save(user);
+		return UserCharacterResponse.from(user);
 	}
 
 	@Override
 	public UserCharacterResponse addCharacter(Long userId, ChangeCharacterRequest request) {
-		User user = userReader.readByUserId(userId);
-		return userCharacterCommander.addCharacter(user, request);
+		User user = userCharacterCommander.addCharacter(userId, request);
+		userCommander.save(user);
+		return UserCharacterResponse.from(user);
 	}
 
 	@Override
