@@ -13,8 +13,6 @@ Urdego_User_Service
 - Spring cloud :
 
 
-# Urdego_Content_Service
-
 
 # 🗺️ 어데고?! - 위치 추적 게임 서비스
 
