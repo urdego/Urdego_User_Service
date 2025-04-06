@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
 	private final GameCharacterRepository gameCharacterRepository;
 
 	//Components
-	private final LevelCalculator levelCalculator;
+	private final LevelManager levelManager;
 	private final UserReader userReader;
 	private final UserCommander userCommander;
 	private final UserDeleter userDeleter;

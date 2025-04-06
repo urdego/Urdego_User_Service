@@ -4,9 +4,7 @@ import ai.onnxruntime.OrtException;
 import io.urdego.urdego_user_service.api.user.dto.request.ExpRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
 import io.urdego.urdego_user_service.api.user.dto.response.LevelResponse;
-import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
 import io.urdego.urdego_user_service.common.exception.character.InvalidCharacterException;
-import io.urdego.urdego_user_service.common.exception.user.ReLoginFailException;
 import io.urdego.urdego_user_service.common.exception.userCharacter.DuplicatedCharacterUserException;
 import io.urdego.urdego_user_service.domain.entity.GameCharacter;
 import io.urdego.urdego_user_service.domain.entity.User;
@@ -33,7 +31,7 @@ public class UserCommander {
     private final UserReader userReader;
     private final UserValidator userValidator;
     private final UserCharacterCommander userCharacterCommander;
-    private final LevelCalculator levelCalculator;
+    private final LevelManager levelManager;
 
     public void save(User user) {
         userRepository.save(user);
@@ -98,12 +96,12 @@ public class UserCommander {
             log.info("totalExp : {}", totalExp);
 
             int beforeLevel = user.getLevel();
-            int afterLevel = levelCalculator.calculateLevel(totalExp);
+            int afterLevel = levelManager.calculateLevel(totalExp);
             log.info("before level : {} after level : {} ", beforeLevel, afterLevel);
 
             //레벨업 했다면
             if(beforeLevel < afterLevel){
-                UserCharacter userCharacter = levelUpReword(user, afterLevel);
+                UserCharacter userCharacter = levelManager.levelUpReword(user, afterLevel);
                 user.getOwnedCharacters().add(userCharacter);
                 user.levelUp(afterLevel);
                 isLevelUp = true;
@@ -115,19 +113,5 @@ public class UserCommander {
         }
         saveAll(updateUserList);
         return responses;
-    }
-
-    //레벨 업 보상 지급
-    public UserCharacter levelUpReword(User user, int characterIndex) {
-        Long index = Long.valueOf(characterIndex);
-        GameCharacter addGameCharacter = gameCharacterRepository.findById(index)
-                .orElseThrow(() -> InvalidCharacterException.EXCEPTION);
-
-        if (userCharacterRepository.existsByUserAndCharacter(user, addGameCharacter)) {
-            throw DuplicatedCharacterUserException.EXCEPTION;
-        }
-
-        UserCharacter userCharacter = new UserCharacter(user, addGameCharacter);
-        return userCharacter;
     }
 }
