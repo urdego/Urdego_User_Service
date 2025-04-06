@@ -1,4 +1,4 @@
-package io.urdego.urdego_user_service.domain.service;
+package io.urdego.urdego_user_service.domain.service.components;
 
 import ai.djl.huggingface.tokenizers.Encoding;
 import ai.djl.huggingface.tokenizers.HuggingFaceTokenizer;
