@@ -87,6 +87,13 @@ public class User extends BaseTimeEntity{
 				.build();
 	}
 
+	public static User createDummy(String nickname, int nicknameNum) {
+		return User.builder()
+				.name(nickname)
+				.nickname(nickname + "#" + nicknameNum)
+				.
+	}
+
 	public void setIsDeleted(String withDrawalReason) {
 		this.isDeleted = true;
 		this.withDrawalReason = withDrawalReason;
