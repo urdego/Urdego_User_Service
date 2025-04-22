@@ -1,7 +1,9 @@
 package io.urdego.urdego_user_service.domain.service.components;
 
 import ai.onnxruntime.OrtException;
+import io.urdego.urdego_user_service.api.user.dto.request.ExpRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
+import io.urdego.urdego_user_service.api.user.dto.response.LevelResponse;
 import io.urdego.urdego_user_service.domain.entity.GameCharacter;
 import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.domain.entity.UserCharacter;
@@ -148,17 +150,64 @@ class UserCommanderTest {
     */
     @Test
     void updateNickname_ShouldUpdateUserNickname() throws OrtException {
-        //given
-        //1. userId로 해당 유저 검색
-        User dummyUser = User.create()
-
-        //2. newNickname 이 올바른 닉네임인지 검증
+// given
+        Long userId = 1L;
+        String oldNickname = "dummyNickname";
         String newNickname = "newNickname";
+
+        User dummyUser = User.createDummy(1L,oldNickname, 1, "email@email.com", "KAKAO", "1");
+
+        when(userReader.readByUserId(userId)).thenReturn(dummyUser);
         when(userValidator.validateNickname(newNickname)).thenReturn(true);
 
-        //when
+        // when
+        User result = userCommander.updateNickname(userId, newNickname);
 
+        // then
+        verify(userReader).readByUserId(userId);
+        verify(userValidator).validateNickname(newNickname);
+        verify(userRepository).save(dummyUser);
+
+        assertEquals(newNickname, result.getNickname());
+    }
+    /*
+        1. Request에 있는 유저 리스트 검색(UserId)
+        2. user 에게 exp 추가
+        3. 유저 레벨업 여부 확인
+    * */
+    @Test
+    void saveExp_ShouldSaveExp(){
+        //given
+        ExpRequest dummyRequest1 = new ExpRequest(1L,50L);
+        ExpRequest dummyRequest2 = new ExpRequest(2L,100L);
+        ExpRequest dummyRequest3 = new ExpRequest(3L,200L);
+        User dummyUser1 = User.createDummy(1L,"dummyUser1", 1,
+                "test1@gmail.com", "KAKAO", "1");
+
+        User dummyUser2 = User.createDummy(2L,"dummyUser2", 1,
+                "test2@gmail.com", "KAKAO", "1");
+
+        User dummyUser3 = User.createDummy(3L,"dummyUser3", 1,
+                "test3@gmail.com", "KAKAO", "1");
+
+        List<ExpRequest> requests = List.of(dummyRequest1, dummyRequest2, dummyRequest3);
+
+        when(userReader.readByUserId(1L)).thenReturn(dummyUser1);
+        when(userReader.readByUserId(2L)).thenReturn(dummyUser2);
+        when(userReader.readByUserId(3L)).thenReturn(dummyUser3);
+
+        //when
+        List<LevelResponse> responses = userCommander.saveExp(requests);
 
         //then
+        verify(userReader).readByUserId(1L);
+        verify(userReader).readByUserId(2L);
+        verify(userReader).readByUserId(3L);
+
+        verify(userRepository).saveAll(List.of(dummyUser1, dummyUser2, dummyUser3));
+
+        assertEquals(50L,dummyUser1.getExp());
+        assertEquals(100L,dummyUser2.getExp());
+        assertEquals(200L,dummyUser3.getExp());
     }
 }
