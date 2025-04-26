@@ -43,6 +43,6 @@ class UserDeleterTest {
         verify(userCharacterRepository).deleteByUser(dummyUser);
 
         assertTrue(dummyUser.getIsDeleted());
-        assertEquals(dummyUser.getWithDrawalReason(), drwalRequest);
+        assertEquals(drwalRequest, dummyUser.getWithDrawalReason());
     }
 }
