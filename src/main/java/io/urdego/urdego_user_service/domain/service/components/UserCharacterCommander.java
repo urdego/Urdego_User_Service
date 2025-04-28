@@ -1,7 +1,6 @@
 package io.urdego.urdego_user_service.domain.service.components;
 
 import io.urdego.urdego_user_service.api.user.dto.request.ChangeCharacterRequest;
-import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse;
 import io.urdego.urdego_user_service.common.exception.user.InvalidActiveCharacterException;
 import io.urdego.urdego_user_service.common.exception.user.ReLoginFailException;
 import io.urdego.urdego_user_service.common.exception.userCharacter.DuplicatedCharacterUserException;
