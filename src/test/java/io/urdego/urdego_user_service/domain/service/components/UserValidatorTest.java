@@ -1,12 +1,10 @@
 package io.urdego.urdego_user_service.domain.service.components;
 
 import ai.onnxruntime.OrtException;
-import com.sun.jdi.InvalidLineNumberException;
 import io.urdego.urdego_user_service.api.user.dto.request.BadWordResponse;
 import io.urdego.urdego_user_service.common.enums.PlatformType;
 import io.urdego.urdego_user_service.common.exception.user.InvalidNicknameUserException;
 import io.urdego.urdego_user_service.common.exception.userCharacter.DuplicatedCharacterUserException;
-import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.infra.model.OnnxInference;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
