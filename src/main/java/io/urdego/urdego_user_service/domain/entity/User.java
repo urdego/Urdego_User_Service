@@ -46,7 +46,7 @@ public class User extends BaseTimeEntity{
 	private Boolean pushAlarm;
 
 	@Column(name = "is_deleted", nullable = false)
-	private Boolean isDeleted = false;
+	private Boolean isDeleted;
 
 	//경험치
 	@Column(name = "experience_point")
@@ -81,7 +81,26 @@ public class User extends BaseTimeEntity{
 						PlatformType.valueOf(signUpRequest.platformType().toUpperCase()))
 				.ownedCharacters(new ArrayList<>())
 				.role(Role.USER)
+				.exp(0L)
 				.isDeleted(false)
+				.level(1)
+				.build();
+	}
+
+	// updateNickname() 테스트용
+	public static User createDummy(Long userId,String nickname, int nicknameNum,
+								   String email, String platformType,
+								   String platformId) {
+		return User.builder()
+				.id(userId)
+				.name(nickname)
+				.nickname(nickname + "#" + nicknameNum)
+				.email(email)
+				.platformId(platformId)
+				.platformType(PlatformType.valueOf(platformType.toUpperCase()))
+				.role(Role.USER)
+				.isDeleted(false)
+				.ownedCharacters(new ArrayList<>())
 				.exp(0L)
 				.level(1)
 				.build();
