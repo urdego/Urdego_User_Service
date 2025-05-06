@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/test")
+@RequestMapping("api/user-service")
 @RequiredArgsConstructor
 @Slf4j
 public class PriceController {
 
     private final PriceService priceService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/test/{id}")
     public String getPrice(@PathVariable Long id) {
         long start = System.currentTimeMillis();
         String result = priceService.getPrice(id);
