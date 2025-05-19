@@ -5,6 +5,7 @@ import io.urdego.urdego_user_service.api.user.dto.request.BadWordResponse;
 import io.urdego.urdego_user_service.common.enums.PlatformType;
 import io.urdego.urdego_user_service.common.exception.user.InvalidNicknameUserException;
 import io.urdego.urdego_user_service.common.exception.userCharacter.DuplicatedCharacterUserException;
+import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.infra.model.OnnxInference;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,11 +33,11 @@ class UserValidatorTest {
 
         //when
         when(userReader.existsByEmailAndPlatformType(email, platformType)).thenReturn(true);
-        userValidator.checkSignUpUser(email, platformType);
+        boolean result = userValidator.checkSignUpUser(email, platformType);
 
         //then
         verify(userReader, times(1)).existsByEmailAndPlatformType(email, platformType);
-        assertTrue(userValidator.checkSignUpUser(email, platformType));
+        assertTrue(result);
     }
 
     @Test
@@ -48,11 +49,11 @@ class UserValidatorTest {
 
         //when
         when(userReader.existsByEmailAndPlatformType(email, platformType)).thenReturn(false);
-        userValidator.checkSignUpUser(email, platformType);
+        boolean result = userValidator.checkSignUpUser(email, platformType);
 
         //then
         verify(userReader, times(1)).existsByEmailAndPlatformType(email, platformType);
-        assertFalse(userValidator.checkSignUpUser(email, platformType));
+        assertFalse(result);
     }
 
     @Test
@@ -65,7 +66,6 @@ class UserValidatorTest {
 
         //then
         assertThrows(DuplicatedCharacterUserException.class, () -> userValidator.validateNickname(nickname));
-
         verify(userReader, times(1)).existsByNicknameAndIsDeletedFalse(nickname);
     }
 
@@ -113,5 +113,40 @@ class UserValidatorTest {
         assertTrue(result);
         verify(tokenizer, times(1)).getTokenizer(nickname);
         verify(onnxInference, times(1)).runInference(any(),any(), any());
+    }
+
+    @Test
+    void checkDeleteUser_ShouldReturnTrue(){
+        User dummyUser = User.createDummy(1L,"dummyUser1", 1,
+                "test1@gmail.com", "KAKAO", "1");
+        dummyUser.setIsDeleted("testDelete");
+
+        boolean result = userValidator.checkDeletedUser(dummyUser);
+
+        assertTrue(result);
+        assertEquals(true, dummyUser.getIsDeleted());
+        assertEquals("testDelete", dummyUser.getWithDrawalReason());
+    }
+
+    @Test
+    void checkDeleteUser_ShouldReturnFalse(){
+        User dummyUser = User.createDummy(1L,"dummyUser1", 1,
+                "test1@gmail.com", "KAKAO", "1");
+
+        boolean result = userValidator.checkDeletedUser(dummyUser);
+
+        assertFalse(result);
+        assertEquals(false, dummyUser.getIsDeleted());
+    }
+
+    @Test
+    void isProfane_ShouldGetTokenizer_ThenReturnNull() throws OrtException {
+        //when
+        when(tokenizer.getTokenizer(anyString()))
+                .thenReturn(null);
+
+        boolean result = userValidator.isProfane(anyString());
+
+        assertTrue(result);
     }
 }
