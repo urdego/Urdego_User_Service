@@ -71,7 +71,7 @@ public class User extends BaseTimeEntity{
 	@JoinColumn(name = "active_character_id",nullable = true)
 	private GameCharacter activeCharacter;
 
-	public static User create(UserSignUpRequest signUpRequest, int nicknameNum) {
+	public static User create(UserSignUpRequest signUpRequest, Long nicknameNum) {
 		return User.builder()
 				.name(signUpRequest.nickname())
 				.nickname(signUpRequest.nickname() +"#"+nicknameNum)

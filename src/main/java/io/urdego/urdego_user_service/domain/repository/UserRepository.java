@@ -24,8 +24,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	Optional<User> findByEmailAndPlatformType(String email, PlatformType platformType);
 
 	//이름으로 검색한 회원 리스트
-	List<User> findByName(String name);
+	//List<User> findByName(String name);
 
+	@Query("SELECT COUNT (u.id) from User u where u. name = :name")
+	Long countByName(@Param("name") String name);
 
     Optional<User> findByNicknameAndIsDeletedFalse(String nickname);
 
