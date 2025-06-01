@@ -40,7 +40,7 @@ public class UserCommander {
 
     // 신규 회원가입
     public User signUp(UserSignUpRequest userSignUpRequest) {
-        int nicknameNumber = countDuplicatedNickname(userSignUpRequest.nickname());
+        Long nicknameNumber = countDuplicatedNickname(userSignUpRequest.nickname());
         User newUser = User.create(userSignUpRequest,nicknameNumber);
 
         UserCharacter userCharacter = userCharacterCommander.initActiveCharacter(newUser);
@@ -53,7 +53,7 @@ public class UserCommander {
 
     // 회원 탈퇴 후 재가입
     public User reSignUp(User existingUser, UserSignUpRequest userSignUpRequest) {
-        int nicknameNumber = countDuplicatedNickname(userSignUpRequest.nickname());
+        Long nicknameNumber = countDuplicatedNickname(userSignUpRequest.nickname());
         existingUser.initUserInfo(userSignUpRequest.platformId());
         existingUser.updateNickname(userSignUpRequest.nickname() +"#"+nicknameNumber);
         userCharacterCommander.initActiveCharacter(existingUser);
@@ -74,9 +74,10 @@ public class UserCommander {
     }
 
     // 회원가입 시 닉네임 넘버링
-    private int countDuplicatedNickname(String nickname){
-        List<User> userList = userReader.findByName(nickname);
-        int nicknameNumber = userList.size() + 1;
+    private Long countDuplicatedNickname(String nickname){
+        //List<User> userList = userReader.findByName(nickname);
+        //int nicknameNumber = userList.size() + 1;
+        Long nicknameNumber = userReader.countByName(nickname);
         return nicknameNumber;
     }
 

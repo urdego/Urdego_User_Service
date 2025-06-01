@@ -47,11 +47,10 @@ class UserCommanderTest {
     void signUp_ShouldCreateUserWithCharacter(){
         //given
         UserSignUpRequest request = new UserSignUpRequest("nickname","email@email.com","KAKAO","1");
-        List<User> userList = List.of(mock(User.class), mock(User.class));
 
         //1. 중복된 닉네임이 몇개 있는지 체크
-        when(userReader.findByName(request.nickname())).thenReturn(userList);
-        int nicknameNumber = userList.size() + 1;
+        when(userReader.countByName(request.nickname())).thenReturn(1L);
+        Long nicknameNumber = 1L;
 
         //2. 유저 생성
         User dummyUser = User.create(request,nicknameNumber);
@@ -74,9 +73,9 @@ class UserCommanderTest {
 
         //5.1 중복된 닉네임이 몇개 있는지 체크
         //검증
-        verify(userReader).findByName(request.nickname());
+        verify(userReader).countByName(request.nickname());
         //확인
-        assertEquals("nickname#3",result.getNickname());
+        assertEquals("nickname#1",result.getNickname());
 
         //5.2 유저 생성
         //검증
@@ -110,11 +109,10 @@ class UserCommanderTest {
     void reSignUp_ShouldInitializeUserWithCharacter(){
         //given
         UserSignUpRequest request = new UserSignUpRequest("nickname","email@email.com","KAKAO","1");
-        List<User> userList = List.of(mock(User.class), mock(User.class));
 
         //1. 중복 닉네임 수 체크
-        when(userReader.findByName(request.nickname())).thenReturn(userList);
-        int nicknameNumber = userList.size() + 1;
+        when(userReader.countByName(request.nickname())).thenReturn(2L);
+        Long nicknameNumber = 2L;
 
         //탈퇴된 더미 유저 생성
         User dummyDeletedUser = User.create(request,nicknameNumber);
@@ -126,8 +124,8 @@ class UserCommanderTest {
 
         //then
         //1. 중복 닉네임 수 검증
-        verify(userReader).findByName(request.nickname());
-        assertEquals("nickname#3",result.getNickname());
+        verify(userReader).countByName(request.nickname());
+        assertEquals("nickname#2",result.getNickname());
 
         //2. 탈퇴된 더미 유저의 상태가 바뀌었는지( 정상 유저로 초기화 됐는지) 검증 및 확인
         assertEquals(false,result.getIsDeleted());

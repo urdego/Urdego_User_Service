@@ -19,8 +19,12 @@ import java.util.List;
 public class UserReader {
     private final UserRepository userRepository;
 
-    public List<User> findByName(String nickname){
+  /*  public List<User> findByName(String nickname){
         return userRepository.findByName(nickname);
+    }*/
+
+    public Long countByName(String nickname){
+        return userRepository.countByName(nickname);
     }
 
     public User readByUserId(Long userId) {
