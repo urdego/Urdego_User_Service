@@ -17,6 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	boolean existsByNicknameAndIsDeletedFalse(String nickname);
 
 	// PK로 삭제되지 않은 유저 조회
+	@Query("SELECT u FROM User u LEFT JOIN FETCH u.ownedCharacters LEFT JOIN FETCH u.activeCharacter WHERE u.id =:userId")
 	Optional<User> findByIdAndIsDeletedFalse(Long userId);
 
 	boolean existsByEmailAndPlatformType(String email, PlatformType platformType);
@@ -26,11 +27,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	//이름으로 검색한 회원 리스트
 	//List<User> findByName(String name);
 
-	@Query("SELECT COUNT (u.id) from User u where u. name = :name")
+	@Query("SELECT COUNT (u.id) FROM User u WHERE u. name = :name")
 	Long countByName(@Param("name") String name);
 
     Optional<User> findByNicknameAndIsDeletedFalse(String nickname);
 
-	@Query("SELECT u from User u where u.nickname like %:word%")
+	@Query("SELECT u from User u left join fetch u.ownedCharacters left join fetch u.activeCharacter where u.nickname like %:word%")
 	List<User> findByWord(String word);
 }
