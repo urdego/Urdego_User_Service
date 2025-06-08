@@ -32,6 +32,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByNicknameAndIsDeletedFalse(String nickname);
 
-	@Query("SELECT u from User u where u.nickname like %:word%")
+	@Query("SELECT u from User u left join fetch u.ownedCharacters left join fetch u.activeCharacter where u.nickname like %:word%")
 	List<User> findByWord(String word);
 }
