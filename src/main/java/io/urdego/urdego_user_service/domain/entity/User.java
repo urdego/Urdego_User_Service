@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {
+		@UniqueConstraint(name = "uk_user_nickname", columnNames = "nickname")
+})
 @Getter
 @Builder
 @AllArgsConstructor
@@ -34,6 +36,7 @@ public class User extends BaseTimeEntity{
 	private String email;
 
 	private String name;
+
 
 	private String nickname;
 
