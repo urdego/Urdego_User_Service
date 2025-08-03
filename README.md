@@ -1,4 +1,4 @@
-<img width="339" height="238" alt="image" src="https://github.com/user-attachments/assets/2660a1a2-086f-44e9-ad4a-3fdeb159ac13" /># Urdego_User_Service
+# Urdego_User_Service
 
 ## 📅 프로젝트 진행 과정
 
