@@ -9,6 +9,9 @@ Urdego_User_Service
 - 부적절한 닉네임 필터
 - 유저 데이터 관리
 
+## ERD
+<img width="888" height="633" alt="image" src="https://github.com/user-attachments/assets/d1809f5c-dfd7-4388-9e61-35c6f0975e8c" />
+
 
 # 🗺️ 어데고?! - 위치 추적 게임 서비스
 
